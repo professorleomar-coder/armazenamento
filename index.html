@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JOGO DOS DISPOSITIVOS DE ARMAZENAMENTO | 50 Questões</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Fredoka', 'Nunito', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    
+    .wood-plaque {
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      box-shadow: 0 10px 0 #020617, 0 20px 30px rgba(0, 0, 0, 0.6);
+      border: 4px solid #38bdf8;
+    }
+
+    .plaque-correct {
+      background: linear-gradient(180deg, #10b981 0%, #059669 60%, #047857 100%);
+      box-shadow: 0 10px 0 #064e3b, 0 20px 35px rgba(16, 185, 129, 0.45);
+      border: 4px solid #a7f3d0;
+    }
+
+    .plaque-wrong {
+      background: linear-gradient(180deg, #ef4444 0%, #dc2626 60%, #b91c1c 100%);
+      box-shadow: 0 10px 0 #7f1d1d, 0 20px 35px rgba(239, 68, 68, 0.45);
+      border: 4px solid #fecaca;
+    }
+
+    .btn-3d {
+      transition: all 0.15s ease-in-out;
+      transform: translateY(0);
+    }
+    .btn-3d:hover {
+      filter: brightness(1.06);
+      transform: translateY(-2px);
+    }
+    .btn-3d:active {
+      transform: translateY(4px);
+    }
+
+    .btn-cyan {
+      background: linear-gradient(180deg, #06b6d4 0%, #0891b2 100%);
+      box-shadow: 0 6px 0 #0e7490, 0 10px 15px rgba(6, 182, 212, 0.3);
+      border-bottom: 2px solid #0891b2;
+    }
+    .btn-cyan:active {
+      box-shadow: 0 2px 0 #0e7490;
+    }
+
+    .btn-amber {
+      background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+      box-shadow: 0 6px 0 #b45309, 0 10px 15px rgba(245, 158, 11, 0.3);
+      border-bottom: 2px solid #d97706;
+    }
+    .btn-amber:active {
+      box-shadow: 0 2px 0 #b45309;
+    }
+
+    .btn-violet {
+      background: linear-gradient(180deg, #8b5cf6 0%, #7c3aed 100%);
+      box-shadow: 0 6px 0 #6d28d9, 0 10px 15px rgba(139, 92, 246, 0.3);
+      border-bottom: 2px solid #7c3aed;
+    }
+    .btn-violet:active {
+      box-shadow: 0 2px 0 #6d28d9;
+    }
+
+    .btn-green {
+      background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+      box-shadow: 0 6px 0 #15803d, 0 10px 15px rgba(34, 197, 94, 0.3);
+    }
+    .btn-green:active {
+      box-shadow: 0 2px 0 #15803d;
+    }
+
+    .btn-blue {
+      background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+      box-shadow: 0 6px 0 #1e40af, 0 10px 15px rgba(59, 130, 246, 0.3);
+    }
+    .btn-blue:active {
+      box-shadow: 0 2px 0 #1e40af;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.7) rotate(-2deg); opacity: 0; }
+      75% { transform: scale(1.04) rotate(1deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    .pop-in {
+      animation: popIn 0.32s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
+    }
+    .shake-anim {
+      animation: shake 0.4s ease-in-out;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.6)); }
+      50% { transform: scale(1.05); filter: drop-shadow(0 0 22px rgba(56, 189, 248, 0.95)); }
+    }
+    .pulse-glow {
+      animation: pulseGlow 1.6s infinite ease-in-out;
+    }
+
+    .confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 60;
+    }
+
+    /* Custom Scrollbar for review modal and long text */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.5);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(56, 189, 248, 0.8);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-indigo-950 to-sky-950 min-h-screen text-white flex flex-col justify-between p-3 sm:p-6 relative overflow-x-hidden">
+  <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+
+  <!-- Top Bar / Header -->
+  <header class="max-w-4xl w-full mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 shadow-xl">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-amber-400 to-amber-300 text-slate-950 flex items-center justify-center font-black text-2xl shadow-inner shadow-amber-600/50">
+        💾
+      </div>
+      <div>
+        <h1 class="text-lg sm:text-2xl font-black tracking-wide text-amber-300 drop-shadow">DISPOSITIVOS DE ARMAZENAMENTO</h1>
+        <p class="text-xs sm:text-sm text-sky-200">50 questões aleatorizadas com alternativas A, B ou C!</p>
+      </div>
+    </div>
+
+    <!-- Quick Stats & Settings -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <div class="flex items-center gap-1.5 bg-black/40 px-3 py-1.5 rounded-xl border border-white/10 text-xs sm:text-sm font-bold" title="Sequência de acertos seguidos">
+        <span>🔥</span>
+        <span class="text-amber-400 font-black" id="streakCounter">0</span>
+      </div>
+      <div class="flex items-center gap-1.5 bg-black/40 px-3 py-1.5 rounded-xl border border-white/10 text-xs sm:text-sm font-bold" title="Pontuação total acumulada">
+        <span>🏆</span>
+        <span class="text-yellow-300 font-black" id="scoreCounter">0 pts</span>
+      </div>
+      <button id="soundToggleBtn" onclick="toggleSound()" title="Ativar/Desativar Efeitos Sonoros" class="w-10 h-10 rounded-xl bg-white/15 hover:bg-white/25 flex items-center justify-center transition text-lg border border-white/10">
+        🔊
+      </button>
+      <button onclick="openHelpModal()" title="Guia de Estudos e Regras" class="w-10 h-10 rounded-xl bg-amber-400 hover:bg-amber-300 text-amber-950 flex items-center justify-center font-black text-lg transition shadow-md border border-amber-300">
+        ❓
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Game Container -->
+  <main class="max-w-3xl w-full mx-auto my-auto py-3">
+    <!-- Progress & Counters Card -->
+    <div class="bg-black/35 rounded-2xl p-3 sm:p-4 mb-3 backdrop-blur-sm border border-white/10 flex flex-col gap-2 shadow-lg">
+      <div class="flex items-center justify-between text-xs sm:text-sm font-bold text-sky-200">
+        <span id="progressText" class="font-black text-white">Questão 1 de 50</span>
+        <div class="flex items-center gap-3">
+          <span class="text-emerald-400 flex items-center gap-1">✔ <span id="correctCounter" class="font-extrabold">0</span></span>
+          <span class="text-rose-400 flex items-center gap-1">✖ <span id="wrongCounter" class="font-extrabold">0</span></span>
+          <span class="text-xs text-sky-300/80 bg-white/10 px-2 py-0.5 rounded-md hidden sm:inline" id="categoryBadgeMini">Geral</span>
+        </div>
+      </div>
+      <!-- Progress Bar -->
+      <div class="w-full h-3 bg-black/50 rounded-full overflow-hidden p-0.5 border border-white/10">
+        <div id="progressBar" class="h-full bg-gradient-to-r from-amber-400 via-emerald-400 to-sky-400 rounded-full transition-all duration-300 shadow-sm" style="width: 2%;"></div>
+      </div>
+    </div>
+
+    <!-- Active Question / Gameplay Area -->
+    <div id="gamePlayArea" class="relative">
+
+      <!-- THE QUESTION CARD -->
+      <div id="questionCard" class="bg-gradient-to-b from-white/15 to-white/5 rounded-3xl p-5 sm:p-7 backdrop-blur-md border-2 border-white/20 shadow-2xl relative overflow-hidden transition-all duration-300">
+        
+        <!-- Header Category Badge & Audio Voice button -->
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <div id="categoryBadge" class="inline-flex items-center gap-1.5 bg-indigo-600/80 text-indigo-100 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider border border-indigo-400/40">
+            <span>⚡ Categoria</span>
+          </div>
+
+          <!-- Speak Button for Accessibility -->
+          <button id="speakBtn" onclick="speakCurrentQuestion()" title="Ouvir a pergunta em voz alta" class="px-3 py-1 rounded-xl bg-amber-400/20 hover:bg-amber-400/35 text-amber-300 flex items-center gap-1 text-xs font-bold transition border border-amber-300/30">
+            <span>🗣️ Ouvir</span>
+          </button>
+        </div>
+
+        <!-- Visual Image Container (SVGs) - Hidden when pure textual -->
+        <div id="imageContainer" class="hidden mb-4 p-3 bg-slate-950/70 rounded-2xl border border-sky-400/30 shadow-inner flex items-center justify-center min-h-[170px] max-h-[220px] overflow-hidden pop-in">
+          <!-- Inline SVG without spoiler text labels gets injected here dynamically -->
+        </div>
+
+        <!-- The Question Text -->
+        <div class="my-2 sm:my-3">
+          <h2 id="currentQuestionText" class="text-lg sm:text-xl md:text-2xl font-black text-amber-200 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] leading-snug">
+            Carregando questão...
+          </h2>
+        </div>
+
+        <p class="text-xs text-sky-200/80 italic mb-4">
+          Escolha a alternativa <span class="text-amber-300 font-bold">A</span>, <span class="text-amber-300 font-bold">B</span> ou <span class="text-amber-300 font-bold">C</span> (você também pode pressionar as teclas <span class="bg-black/40 px-1.5 py-0.5 rounded border border-white/20 font-mono font-bold text-amber-300">1</span>, <span class="bg-black/40 px-1.5 py-0.5 rounded border border-white/20 font-mono font-bold text-amber-300">2</span>, <span class="bg-black/40 px-1.5 py-0.5 rounded border border-white/20 font-mono font-bold text-amber-300">3</span> ou <span class="bg-black/40 px-1.5 py-0.5 rounded border border-white/20 font-mono font-bold text-amber-300">A</span>, <span class="bg-black/40 px-1.5 py-0.5 rounded border border-white/20 font-mono font-bold text-amber-300">B</span>, <span class="bg-black/40 px-1.5 py-0.5 rounded border border-white/20 font-mono font-bold text-amber-300">C</span>):
+        </p>
+
+        <!-- 3 OPTIONS BUTTONS (A, B, C) -->
+        <div class="grid grid-cols-1 gap-2.5 sm:gap-3 mt-3">
+          <!-- OPTION A (Cyan) -->
+          <button id="optBtn0" onclick="handleUserChoice(0)" class="btn-3d btn-cyan rounded-2xl p-3.5 sm:p-4 text-left group cursor-pointer flex items-center gap-3">
+            <span class="w-9 h-9 rounded-xl bg-black/35 text-white font-black flex items-center justify-center text-base border border-white/25 shrink-0 shadow-inner">A</span>
+            <span id="optText0" class="text-sm sm:text-base font-extrabold text-white leading-tight">Opção A</span>
+          </button>
+
+          <!-- OPTION B (Amber) -->
+          <button id="optBtn1" onclick="handleUserChoice(1)" class="btn-3d btn-amber rounded-2xl p-3.5 sm:p-4 text-left group cursor-pointer flex items-center gap-3">
+            <span class="w-9 h-9 rounded-xl bg-black/35 text-white font-black flex items-center justify-center text-base border border-white/25 shrink-0 shadow-inner">B</span>
+            <span id="optText1" class="text-sm sm:text-base font-extrabold text-white leading-tight">Opção B</span>
+          </button>
+
+          <!-- OPTION C (Violet) -->
+          <button id="optBtn2" onclick="handleUserChoice(2)" class="btn-3d btn-violet rounded-2xl p-3.5 sm:p-4 text-left group cursor-pointer flex items-center gap-3">
+            <span class="w-9 h-9 rounded-xl bg-black/35 text-white font-black flex items-center justify-center text-base border border-white/25 shrink-0 shadow-inner">C</span>
+            <span id="optText2" class="text-sm sm:text-base font-extrabold text-white leading-tight">Opção C</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- PLACA DE FEEDBACK (CORRETO / ERRADO) -->
+      <div id="feedbackPlaqueOverlay" class="hidden absolute inset-0 z-20 flex items-center justify-center p-2">
+        <!-- The Plaque Container with corner rivets -->
+        <div id="plaqueContent" class="w-full max-w-xl rounded-3xl p-5 sm:p-7 text-center text-white pop-in relative shadow-2xl">
+          
+          <!-- Plaque Screws / Metal Rivets -->
+          <div class="absolute top-3 left-4 w-3.5 h-3.5 rounded-full bg-yellow-200/80 border border-yellow-800 shadow-inner"></div>
+          <div class="absolute top-3 right-4 w-3.5 h-3.5 rounded-full bg-yellow-200/80 border border-yellow-800 shadow-inner"></div>
+          <div class="absolute bottom-3 left-4 w-3.5 h-3.5 rounded-full bg-yellow-200/80 border border-yellow-800 shadow-inner"></div>
+          <div class="absolute bottom-3 right-4 w-3.5 h-3.5 rounded-full bg-yellow-200/80 border border-yellow-800 shadow-inner"></div>
+
+          <!-- Icon / Badge -->
+          <div id="plaqueIcon" class="text-5xl sm:text-6xl mb-1 drop-shadow">🎉</div>
+          
+          <!-- Title: PLACA CORRETO! ou PLACA ERRADO! -->
+          <h2 id="plaqueTitle" class="text-2xl sm:text-3xl font-black uppercase tracking-wider drop-shadow-md mb-1">
+            PLACA CORRETO!
+          </h2>
+
+          <!-- Subtitle / Message -->
+          <p id="plaqueSubtitle" class="text-sm sm:text-base font-semibold text-white/95 mb-3">
+            Você acertou em cheio!
+          </p>
+
+          <!-- Educational Explanation Box -->
+          <div class="bg-black/45 rounded-2xl p-4 my-3 border border-white/20 backdrop-blur-sm text-left">
+            <div class="flex items-center gap-1.5 text-xs uppercase tracking-wider font-extrabold text-amber-300 mb-1.5">
+              <span>💡</span>
+              <span>Explicação Pedagógica:</span>
+            </div>
+            <div id="plaqueExplanation" class="text-xs sm:text-sm font-semibold text-sky-100 leading-relaxed">
+              <!-- Explanation text will be injected here -->
+            </div>
+          </div>
+
+          <!-- Next Question Button -->
+          <button id="nextBtn" onclick="nextQuestion()" class="btn-3d w-full py-3 sm:py-3.5 px-6 rounded-2xl font-black text-base sm:text-lg text-white tracking-wide shadow-lg cursor-pointer bg-white/25 hover:bg-white/35 border-2 border-white/40 flex items-center justify-center gap-2 mt-2">
+            <span>Próxima Questão</span>
+            <span class="text-xl">➔</span>
+            <span class="text-xs font-normal opacity-80 ml-2 hidden sm:inline">(ou Espaço/Enter)</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Final Game Over Screen (Hidden by default) -->
+    <div id="finalReportCard" class="hidden bg-gradient-to-b from-white/15 to-white/5 rounded-3xl p-6 sm:p-8 backdrop-blur-md border-2 border-white/20 shadow-2xl text-center pop-in">
+      <div class="text-6xl sm:text-7xl mb-2 pulse-glow">👑</div>
+      <h2 class="text-2xl sm:text-4xl font-black text-amber-300 drop-shadow mb-1">PARABÉNS!</h2>
+      <p class="text-sm sm:text-base text-sky-200 mb-5">Você concluiu as 50 questões sobre Dispositivos de Armazenamento!</p>
+
+      <!-- Results Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 max-w-lg mx-auto mb-5">
+        <div class="bg-black/35 p-3 rounded-2xl border border-white/10">
+          <div class="text-2xl font-black text-white" id="finalTotal">50</div>
+          <div class="text-xs text-sky-200">Questões</div>
+        </div>
+        <div class="bg-black/35 p-3 rounded-2xl border border-emerald-500/40">
+          <div class="text-2xl font-black text-emerald-400" id="finalCorrect">0</div>
+          <div class="text-xs text-emerald-200">Acertos</div>
+        </div>
+        <div class="bg-black/35 p-3 rounded-2xl border border-rose-500/40">
+          <div class="text-2xl font-black text-rose-400" id="finalWrong">0</div>
+          <div class="text-xs text-rose-200">Erros</div>
+        </div>
+        <div class="bg-black/35 p-3 rounded-2xl border border-amber-500/40">
+          <div class="text-2xl font-black text-amber-300" id="finalScore">0</div>
+          <div class="text-xs text-amber-200">Pontos</div>
+        </div>
+      </div>
+
+      <!-- Performance message -->
+      <div id="performanceMessage" class="text-base sm:text-lg font-bold text-emerald-300 mb-6 bg-black/30 p-4 rounded-2xl border border-emerald-400/30"></div>
+
+      <!-- Action buttons -->
+      <div class="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+        <button onclick="restartGame()" class="btn-3d btn-green flex-1 py-3 px-5 rounded-2xl font-black text-base text-white shadow-lg cursor-pointer flex items-center justify-center gap-2">
+          <span>🔄 Jogar Novamente</span>
+        </button>
+        <button onclick="openReviewModal()" class="btn-3d btn-blue flex-1 py-3 px-5 rounded-2xl font-black text-base text-white shadow-lg cursor-pointer flex items-center justify-center gap-2">
+          <span>📋 Ver Gabarito Completo</span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="max-w-4xl w-full mx-auto text-center text-xs text-sky-300/80 py-2">
+    <span>💡 Dica: Dispositivos primários (RAM, Cache) são rápidos e voláteis; secundários (HD, SSD, USB) guardam dados permanentes!</span>
+  </footer>
+
+  <!-- Help & Theory Modal -->
+  <div id="helpModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="bg-slate-900 border-2 border-amber-400/50 rounded-3xl max-w-2xl w-full p-6 text-white pop-in shadow-2xl relative max-h-[90vh] flex flex-col">
+      <div class="flex justify-between items-center mb-3 pb-2 border-b border-white/10 shrink-0">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">📚</span>
+          <h3 class="text-xl font-black text-amber-300">Guia de Estudos: Dispositivos de Armazenamento</h3>
+        </div>
+        <button onclick="closeHelpModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center font-bold">✕</button>
+      </div>
+
+      <div class="space-y-3.5 text-xs sm:text-sm text-sky-100 overflow-y-auto pr-2">
+        <div class="p-3 bg-white/5 rounded-xl border border-sky-400/30">
+          <span class="font-extrabold text-sky-300">1. O que são e Suporte vs Dispositivo:</span>
+          <p class="text-gray-300 mt-1">Dispositivos de armazenamento são componentes eletrônicos que servem para guardar e recuperar informação digital. <b>Não confunda com o suporte físico</b> (o meio onde a informação fica: o disco metálico, o chip semicondutor ou o disco óptico).</p>
+        </div>
+
+        <div class="p-3 bg-white/5 rounded-xl border border-emerald-400/30">
+          <span class="font-extrabold text-emerald-300">2. Primários vs Secundários:</span>
+          <p class="text-gray-300 mt-1"><b>Primários (RAM, Cache):</b> Armazenam informação temporária e volátil enquanto o SO e programas estão em execução. Apagam tudo ao desligar.<br><b>Secundários (SSD, HDD, USB, Cartões):</b> Acessórios fixos ou removíveis que gravam dados de forma permanente.</p>
+        </div>
+
+        <div class="p-3 bg-white/5 rounded-xl border border-violet-400/30">
+          <span class="font-extrabold text-violet-300">3. As 3 Tecnologias Principais:</span>
+          <ul class="list-disc list-inside text-gray-300 mt-1 space-y-0.5">
+            <li><b>Magnéticos:</b> Materiais ferromagnéticos (HDDs, disquetes, fitas DAT/DDS, tambores magnéticos, Zip).</li>
+            <li><b>Eletrônicos:</b> Memória flash ou circuitos não voláteis sem partes móveis (SSDs, pendrives, cartões SD).</li>
+            <li><b>Ópticos:</b> Leitura e gravação a laser sobre fendas e planícies reflexivas (CD: 700MB, DVD: 4,7GB com laser vermelho, Blu-ray: até 33,4GB/camada com laser azul).</li>
+          </ul>
+        </div>
+
+        <div class="p-3 bg-white/5 rounded-xl border border-amber-400/30">
+          <span class="font-extrabold text-amber-300">4. Dispositivos Vigentes vs Obsoletos:</span>
+          <p class="text-gray-300 mt-1"><b>Vigentes:</b> Nuvem, RAM, ROM (firmware/BIOS), SSD, HDD, Discos externos, DVD-ROM/RW, Blu-ray, Memória Flash e Pendrives.<br><b>Obsoletos:</b> Fitas DAT e DDS, CD-ROM/RW, Cartões perfurados (furo=1, sem furo=0), Disquete 3 ½ (1,44 MB), Unidades Zip, Fitas perfuradas e Tambores magnéticos (inventados em 1932).</p>
+        </div>
+      </div>
+
+      <button onclick="closeHelpModal()" class="btn-3d btn-amber w-full py-3 rounded-xl font-black text-white mt-4 shrink-0">
+        Entendi, vamos jogar! 🚀
+      </button>
+    </div>
+  </div>
+
+  <!-- Review Modal (Gabarito Completo) -->
+  <div id="reviewModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
+    <div class="bg-slate-900 border-2 border-sky-400/50 rounded-3xl max-w-3xl w-full p-5 text-white pop-in shadow-2xl relative max-h-[92vh] flex flex-col">
+      <div class="flex justify-between items-center mb-3 pb-2 border-b border-white/10 shrink-0">
+        <div class="flex items-center gap-2">
+          <span class="text-2xl">📋</span>
+          <h3 class="text-xl font-black text-amber-300">Gabarito e Revisão Pedagógica (50 Questões)</h3>
+        </div>
+        <button onclick="closeReviewModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center font-bold">✕</button>
+      </div>
+
+      <div id="reviewContentList" class="space-y-3 overflow-y-auto pr-2 text-xs sm:text-sm">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+
+      <button onclick="closeReviewModal()" class="btn-3d btn-blue w-full py-3 rounded-xl font-black text-white mt-3 shrink-0">
+        Fechar Gabarito
+      </button>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT GAME LOGIC -->
+  <script>
+    // 50 QUESTIONS COMPILED FROM DISPOSITIVOS DE ARMAZENAMENTO DATA
+    const BANCO_DE_QUESTOES = [{"id": 1, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"usbBody\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#0284c7\" />\n      <stop offset=\"50%\" stop-color=\"#0369a1\" />\n      <stop offset=\"100%\" stop-color=\"#075985\" />\n    </linearGradient>\n    <linearGradient id=\"usbMetal\" x1=\"0%\" y1=\"0%\" x2=\"0%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#f8fafc\" />\n      <stop offset=\"50%\" stop-color=\"#cbd5e1\" />\n      <stop offset=\"100%\" stop-color=\"#94a3b8\" />\n    </linearGradient>\n    <filter id=\"glowLed\" x=\"-30%\" y=\"-30%\" width=\"160%\" height=\"160%\">\n      <feGaussianBlur stdDeviation=\"3\" result=\"blur\" />\n      <feComposite in=\"SourceGraphic\" in2=\"blur\" operator=\"over\" />\n    </filter>\n  </defs>\n  <!-- Shadow -->\n  <ellipse cx=\"160\" cy=\"170\" rx=\"120\" ry=\"14\" fill=\"#000000\" opacity=\"0.35\" />\n  <!-- USB Metal Connector -->\n  <rect x=\"50\" y=\"70\" width=\"70\" height=\"60\" rx=\"4\" fill=\"url(#usbMetal)\" stroke=\"#64748b\" stroke-width=\"2\" />\n  <rect x=\"66\" y=\"80\" width=\"16\" height=\"14\" rx=\"2\" fill=\"#334155\" />\n  <rect x=\"66\" y=\"106\" width=\"16\" height=\"14\" rx=\"2\" fill=\"#334155\" />\n  <path d=\"M50 100 L120 100\" stroke=\"#94a3b8\" stroke-width=\"2\" />\n  <rect x=\"92\" y=\"86\" width=\"28\" height=\"28\" rx=\"2\" fill=\"#0284c7\" opacity=\"0.75\" />\n  <!-- Main Body -->\n  <rect x=\"115\" y=\"55\" width=\"155\" height=\"90\" rx=\"16\" fill=\"url(#usbBody)\" stroke=\"#38bdf8\" stroke-width=\"3\" />\n  <!-- Grip Grooves -->\n  <line x1=\"200\" y1=\"68\" x2=\"200\" y2=\"132\" stroke=\"#38bdf8\" stroke-width=\"3\" stroke-linecap=\"round\" />\n  <line x1=\"212\" y1=\"68\" x2=\"212\" y2=\"132\" stroke=\"#38bdf8\" stroke-width=\"3\" stroke-linecap=\"round\" />\n  <line x1=\"224\" y1=\"68\" x2=\"224\" y2=\"132\" stroke=\"#38bdf8\" stroke-width=\"3\" stroke-linecap=\"round\" />\n  <!-- Lanyard hole -->\n  <rect x=\"250\" y=\"85\" width=\"12\" height=\"30\" rx=\"6\" fill=\"#0c4a6e\" stroke=\"#38bdf8\" stroke-width=\"2\" />\n  <!-- LED indicator light -->\n  <circle cx=\"150\" cy=\"100\" r=\"7\" fill=\"#34d399\" filter=\"url(#glowLed)\" />\n  <circle cx=\"150\" cy=\"100\" r=\"3\" fill=\"#ffffff\" />\n  <!-- Sleek decorative circuit track -->\n  <path d=\"M165 95 L180 95 L188 85 L190 85\" fill=\"none\" stroke=\"#7dd3fc\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\"0.7\" />\n  <path d=\"M165 105 L180 105 L188 115 L190 115\" fill=\"none\" stroke=\"#7dd3fc\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\"0.7\" />\n</svg>", "question": "Qual é o dispositivo portátil exibido na imagem, que se conecta pela porta USB e utiliza chips de memória flash?", "options": ["Tambor Magnético", "Pendrive (Unidade USB)", "Disquete de 3 ½"], "correctIndex": 1, "explanation": "O Pendrive (unidade USB) é um dispositivo de armazenamento secundário e eletrônico que usa memória flash para gravar e transportar arquivos de forma prática."}, {"id": 2, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"ssdCase\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#334155\" />\n      <stop offset=\"50%\" stop-color=\"#1e293b\" />\n      <stop offset=\"100%\" stop-color=\"#0f172a\" />\n    </linearGradient>\n    <linearGradient id=\"goldSata\" x1=\"0%\" y1=\"0%\" x2=\"0%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fef08a\" />\n      <stop offset=\"50%\" stop-color=\"#eab308\" />\n      <stop offset=\"100%\" stop-color=\"#ca8a04\" />\n    </linearGradient>\n  </defs>\n  <!-- Shadow -->\n  <ellipse cx=\"160\" cy=\"175\" rx=\"120\" ry=\"12\" fill=\"#000000\" opacity=\"0.35\" />\n  <!-- SSD Casing 2.5\" -->\n  <rect x=\"55\" y=\"30\" width=\"210\" height=\"135\" rx=\"10\" fill=\"url(#ssdCase)\" stroke=\"#64748b\" stroke-width=\"3\" />\n  <!-- Corner Screws -->\n  <circle cx=\"68\" cy=\"42\" r=\"4\" fill=\"#94a3b8\" stroke=\"#475569\" />\n  <circle cx=\"252\" cy=\"42\" r=\"4\" fill=\"#94a3b8\" stroke=\"#475569\" />\n  <circle cx=\"68\" cy=\"153\" r=\"4\" fill=\"#94a3b8\" stroke=\"#475569\" />\n  <circle cx=\"252\" cy=\"153\" r=\"4\" fill=\"#94a3b8\" stroke=\"#475569\" />\n  <!-- SATA Data & Power Connector Pins at Bottom Left -->\n  <rect x=\"75\" y=\"158\" width=\"55\" height=\"10\" rx=\"2\" fill=\"#0f172a\" stroke=\"#ca8a04\" stroke-width=\"1.5\" />\n  <g stroke=\"url(#goldSata)\" stroke-width=\"2\">\n    <line x1=\"82\" y1=\"160\" x2=\"82\" y2=\"166\" />\n    <line x1=\"88\" y1=\"160\" x2=\"88\" y2=\"166\" />\n    <line x1=\"94\" y1=\"160\" x2=\"94\" y2=\"166\" />\n    <line x1=\"100\" y1=\"160\" x2=\"100\" y2=\"166\" />\n    <line x1=\"106\" y1=\"160\" x2=\"106\" y2=\"166\" />\n    <line x1=\"112\" y1=\"160\" x2=\"112\" y2=\"166\" />\n    <line x1=\"118\" y1=\"160\" x2=\"118\" y2=\"166\" />\n  </g>\n  <!-- Decorative Front Plate (No text labels) -->\n  <rect x=\"80\" y=\"48\" width=\"160\" height=\"96\" rx=\"6\" fill=\"#090d16\" stroke=\"#3b82f6\" stroke-width=\"2\" />\n  <!-- Symbolic lightning bolt indicating solid-state flash speed -->\n  <path d=\"M155 60 L140 95 L158 95 L145 132 L178 90 L160 90 Z\" fill=\"#38bdf8\" />\n  <!-- Abstract chip tracks -->\n  <rect x=\"95\" y=\"65\" width=\"28\" height=\"28\" rx=\"3\" fill=\"#1e293b\" stroke=\"#38bdf8\" stroke-width=\"1.5\" />\n  <circle cx=\"109\" cy=\"79\" r=\"4\" fill=\"#38bdf8\" opacity=\"0.6\" />\n  <rect x=\"195\" y=\"65\" width=\"28\" height=\"28\" rx=\"3\" fill=\"#1e293b\" stroke=\"#38bdf8\" stroke-width=\"1.5\" />\n  <circle cx=\"209\" cy=\"79\" r=\"4\" fill=\"#38bdf8\" opacity=\"0.6\" />\n  <line x1=\"123\" y1=\"79\" x2=\"138\" y2=\"79\" stroke=\"#60a5fa\" stroke-width=\"2\" stroke-dasharray=\"2,2\" />\n  <line x1=\"180\" y1=\"79\" x2=\"195\" y2=\"79\" stroke=\"#60a5fa\" stroke-width=\"2\" stroke-dasharray=\"2,2\" />\n</svg>", "question": "Qual é o dispositivo moderno ilustrado na imagem, caracterizado por utilizar memória flash e não possuir nenhuma parte mecânica móvel?", "options": ["Unidade de Fita DDS", "Disco Rígido Mecânico (HDD)", "Unidade de Estado Sólido (SSD)"], "correctIndex": 2, "explanation": "O SSD (Solid State Drive) armazena informações em memória flash de forma persistente. Como não possui peças móveis, é muito mais veloz, silencioso e resistente a quedas que um HDD."}, {"id": 3, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <radialGradient id=\"platterGrad\" cx=\"50%\" cy=\"50%\" r=\"50%\">\n      <stop offset=\"0%\" stop-color=\"#ffffff\" />\n      <stop offset=\"35%\" stop-color=\"#e2e8f0\" />\n      <stop offset=\"70%\" stop-color=\"#94a3b8\" />\n      <stop offset=\"100%\" stop-color=\"#64748b\" />\n    </radialGradient>\n    <linearGradient id=\"actuatorArm\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#f8fafc\" />\n      <stop offset=\"100%\" stop-color=\"#475569\" />\n    </linearGradient>\n  </defs>\n  <!-- Shadow -->\n  <ellipse cx=\"160\" cy=\"178\" rx=\"125\" ry=\"12\" fill=\"#000000\" opacity=\"0.4\" />\n  <!-- HDD Base Chassis -->\n  <rect x=\"45\" y=\"20\" width=\"230\" height=\"155\" rx=\"12\" fill=\"#1e293b\" stroke=\"#475569\" stroke-width=\"4\" />\n  <!-- Corner Mount Screws -->\n  <circle cx=\"58\" cy=\"32\" r=\"4.5\" fill=\"#94a3b8\" stroke=\"#334155\" />\n  <circle cx=\"262\" cy=\"32\" r=\"4.5\" fill=\"#94a3b8\" stroke=\"#334155\" />\n  <circle cx=\"58\" cy=\"163\" r=\"4.5\" fill=\"#94a3b8\" stroke=\"#334155\" />\n  <circle cx=\"262\" cy=\"163\" r=\"4.5\" fill=\"#94a3b8\" stroke=\"#334155\" />\n  <!-- Spinning Magnetic Platter -->\n  <circle cx=\"140\" cy=\"98\" r=\"62\" fill=\"url(#platterGrad)\" stroke=\"#38bdf8\" stroke-width=\"1.5\" />\n  <circle cx=\"140\" cy=\"98\" r=\"46\" fill=\"none\" stroke=\"#e2e8f0\" stroke-width=\"1\" stroke-dasharray=\"5,4\" opacity=\"0.7\" />\n  <circle cx=\"140\" cy=\"98\" r=\"28\" fill=\"none\" stroke=\"#e2e8f0\" stroke-width=\"1\" opacity=\"0.8\" />\n  <!-- Center Spindle Motor -->\n  <circle cx=\"140\" cy=\"98\" r=\"16\" fill=\"#334155\" stroke=\"#94a3b8\" stroke-width=\"2\" />\n  <circle cx=\"140\" cy=\"98\" r=\"7\" fill=\"#f8fafc\" />\n  <!-- Voice coil magnet -->\n  <rect x=\"215\" y=\"42\" width=\"35\" height=\"40\" rx=\"6\" fill=\"#38bdf8\" opacity=\"0.25\" stroke=\"#38bdf8\" stroke-width=\"1.5\" />\n  <circle cx=\"225\" cy=\"115\" r=\"14\" fill=\"#475569\" stroke=\"#94a3b8\" stroke-width=\"2\" />\n  <circle cx=\"225\" cy=\"115\" r=\"5\" fill=\"#f8fafc\" />\n  <!-- Mechanical Actuator Arm and Head -->\n  <polygon points=\"225,112 155,75 152,82 225,118\" fill=\"url(#actuatorArm)\" stroke=\"#334155\" stroke-width=\"1\" />\n  <rect x=\"145\" y=\"73\" width=\"9\" height=\"5\" rx=\"1\" fill=\"#f59e0b\" />\n  <circle cx=\"148\" cy=\"75\" r=\"1.5\" fill=\"#ef4444\" />\n</svg>", "question": "A ilustração apresenta a estrutura interna de qual dispositivo de armazenamento magnético, composto por pratos rígidos giratórios e um cabeçote móvel?", "options": ["Cartão Perfurado", "Disco Rígido (HDD)", "Unidade de DVD-ROM"], "correctIndex": 1, "explanation": "O Disco Rígido (HDD - Hard Disk Drive) grava informações magneticamente em placas circulares rígidas por meio de um cabeçote móvel acionado por atuador eletromagnético."}, {"id": 4, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"ramPcb\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#047857\" />\n      <stop offset=\"50%\" stop-color=\"#059669\" />\n      <stop offset=\"100%\" stop-color=\"#065f46\" />\n    </linearGradient>\n    <linearGradient id=\"goldPins\" x1=\"0%\" y1=\"0%\" x2=\"0%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fef08a\" />\n      <stop offset=\"100%\" stop-color=\"#eab308\" />\n    </linearGradient>\n  </defs>\n  <!-- Shadow -->\n  <ellipse cx=\"160\" cy=\"170\" rx=\"125\" ry=\"10\" fill=\"#000000\" opacity=\"0.35\" />\n  <!-- PCB Main Board -->\n  <path d=\"M30 70 L30 140 L135 140 L140 133 L145 140 L290 140 L290 70 L280 62 L40 62 Z\" fill=\"url(#ramPcb)\" stroke=\"#10b981\" stroke-width=\"2\" />\n  <!-- Notch on edges -->\n  <rect x=\"25\" y=\"90\" width=\"8\" height=\"15\" rx=\"3\" fill=\"#0f172a\" />\n  <rect x=\"287\" y=\"90\" width=\"8\" height=\"15\" rx=\"3\" fill=\"#0f172a\" />\n  <!-- Gold Contact Pins at Bottom -->\n  <g fill=\"url(#goldPins)\">\n    <rect x=\"36\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"44\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"52\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"60\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"68\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"76\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"84\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"92\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"100\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"108\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"116\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"124\" y=\"132\" width=\"4\" height=\"8\" />\n    <!-- Center Key Notch -->\n    <rect x=\"148\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"156\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"164\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"172\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"180\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"188\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"196\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"204\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"212\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"220\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"228\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"236\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"244\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"252\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"260\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"268\" y=\"132\" width=\"4\" height=\"8\" />\n    <rect x=\"276\" y=\"132\" width=\"4\" height=\"8\" />\n  </g>\n  <!-- DRAM Microchips (Without DDR text) -->\n  <g fill=\"#18181b\" stroke=\"#3f3f46\" stroke-width=\"1.5\">\n    <rect x=\"45\" y=\"74\" width=\"30\" height=\"46\" rx=\"2\" />\n    <rect x=\"85\" y=\"74\" width=\"30\" height=\"46\" rx=\"2\" />\n    <rect x=\"125\" y=\"74\" width=\"30\" height=\"46\" rx=\"2\" />\n    <rect x=\"165\" y=\"74\" width=\"30\" height=\"46\" rx=\"2\" />\n    <rect x=\"205\" y=\"74\" width=\"30\" height=\"46\" rx=\"2\" />\n    <rect x=\"245\" y=\"74\" width=\"30\" height=\"46\" rx=\"2\" />\n  </g>\n  <!-- Internal circuit tracks on chips -->\n  <line x1=\"50\" y1=\"97\" x2=\"70\" y2=\"97\" stroke=\"#52525b\" stroke-width=\"2\" />\n  <line x1=\"90\" y1=\"97\" x2=\"110\" y2=\"97\" stroke=\"#52525b\" stroke-width=\"2\" />\n  <line x1=\"130\" y1=\"97\" x2=\"150\" y2=\"97\" stroke=\"#52525b\" stroke-width=\"2\" />\n  <line x1=\"170\" y1=\"97\" x2=\"190\" y2=\"97\" stroke=\"#52525b\" stroke-width=\"2\" />\n  <line x1=\"210\" y1=\"97\" x2=\"230\" y2=\"97\" stroke=\"#52525b\" stroke-width=\"2\" />\n  <line x1=\"250\" y1=\"97\" x2=\"270\" y2=\"97\" stroke=\"#52525b\" stroke-width=\"2\" />\n  <!-- Small discrete capacitor dots -->\n  <circle cx=\"38\" cy=\"80\" r=\"2\" fill=\"#ca8a04\" />\n  <circle cx=\"38\" cy=\"90\" r=\"2\" fill=\"#ca8a04\" />\n  <circle cx=\"38\" cy=\"100\" r=\"2\" fill=\"#ca8a04\" />\n  <circle cx=\"282\" cy=\"80\" r=\"2\" fill=\"#ca8a04\" />\n  <circle cx=\"282\" cy=\"90\" r=\"2\" fill=\"#ca8a04\" />\n</svg>", "question": "Qual é o componente mostrado na imagem, que é conectado diretamente à placa-mãe para armazenar dados temporários enquanto programas estão em execução?", "options": ["Unidade Zip", "Memória ROM", "Memória RAM"], "correctIndex": 2, "explanation": "A Memória RAM (Random Access Memory) é a memória principal do computador. Por ser volátil, todos os dados nela armazenados são apagados ao desligar a máquina."}, {"id": 5, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"cloudGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#38bdf8\" />\n      <stop offset=\"50%\" stop-color=\"#0284c7\" />\n      <stop offset=\"100%\" stop-color=\"#1d4ed8\" />\n    </linearGradient>\n  </defs>\n  <!-- Shadow -->\n  <ellipse cx=\"160\" cy=\"175\" rx=\"100\" ry=\"10\" fill=\"#000000\" opacity=\"0.3\" />\n  <!-- Datacenter Server Racks at bottom -->\n  <g fill=\"#1e293b\" stroke=\"#475569\" stroke-width=\"2\">\n    <rect x=\"90\" y=\"130\" width=\"140\" height=\"35\" rx=\"4\" />\n    <line x1=\"90\" y1=\"147\" x2=\"230\" y2=\"147\" stroke=\"#334155\" stroke-width=\"2\" />\n    <!-- Server LEDs -->\n    <circle cx=\"102\" cy=\"139\" r=\"2.5\" fill=\"#22c55e\" />\n    <circle cx=\"110\" cy=\"139\" r=\"2.5\" fill=\"#38bdf8\" />\n    <circle cx=\"118\" cy=\"139\" r=\"2.5\" fill=\"#f59e0b\" />\n    <rect x=\"180\" y=\"136\" width=\"38\" height=\"6\" rx=\"1\" fill=\"#0f172a\" />\n    <circle cx=\"102\" cy=\"156\" r=\"2.5\" fill=\"#22c55e\" />\n    <circle cx=\"110\" cy=\"156\" r=\"2.5\" fill=\"#38bdf8\" />\n    <rect x=\"180\" y=\"153\" width=\"38\" height=\"6\" rx=\"1\" fill=\"#0f172a\" />\n  </g>\n  <!-- Sync Arrows -->\n  <path d=\"M150 110 L150 126 M150 110 L145 116 M150 110 L155 116\" stroke=\"#38bdf8\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n  <path d=\"M170 126 L170 110 M170 126 L165 120 M170 126 L175 120\" stroke=\"#4ade80\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" />\n  <!-- Main Cloud (No text labels) -->\n  <path d=\"M100 102 \n           A 26 26 0 0 1 120 58 \n           A 38 38 0 0 1 185 50 \n           A 32 32 0 0 1 228 85 \n           A 24 24 0 0 1 220 102 \n           Z\" fill=\"url(#cloudGrad)\" stroke=\"#7dd3fc\" stroke-width=\"3\" />\n  <!-- Cloud network node symbol -->\n  <circle cx=\"160\" cy=\"80\" r=\"14\" fill=\"#ffffff\" opacity=\"0.25\" />\n  <circle cx=\"160\" cy=\"80\" r=\"6\" fill=\"#ffffff\" />\n  <line x1=\"145\" y1=\"80\" x2=\"175\" y2=\"80\" stroke=\"#ffffff\" stroke-width=\"2\" />\n</svg>", "question": "Qual modelo de armazenamento está representado no esquema visual, em que arquivos são enviados pela internet para servidores remotos?", "options": ["Fita Cassete DAT", "Armazenamento na Nuvem", "Unidade de CD-ROM"], "correctIndex": 1, "explanation": "No armazenamento na nuvem, os dados são guardados em servidores remotos espalhados pelo mundo e gerenciados por provedores, acessíveis de qualquer dispositivo com conexão à internet."}, {"id": 6, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"diskCase\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#1e3a8a\" />\n      <stop offset=\"50%\" stop-color=\"#1e40af\" />\n      <stop offset=\"100%\" stop-color=\"#172554\" />\n    </linearGradient>\n    <linearGradient id=\"metalSlider\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#cbd5e1\" />\n      <stop offset=\"50%\" stop-color=\"#f8fafc\" />\n      <stop offset=\"100%\" stop-color=\"#94a3b8\" />\n    </linearGradient>\n  </defs>\n  <!-- Shadow -->\n  <ellipse cx=\"160\" cy=\"180\" rx=\"90\" ry=\"10\" fill=\"#000000\" opacity=\"0.35\" />\n  <!-- Floppy Plastic Enclosure -->\n  <path d=\"M85 35 L225 35 L235 45 L235 165 L85 165 Z\" fill=\"url(#diskCase)\" stroke=\"#60a5fa\" stroke-width=\"3\" rx=\"4\" />\n  <!-- Sliding Metal Shutter -->\n  <rect x=\"110\" y=\"35\" width=\"95\" height=\"52\" rx=\"2\" fill=\"url(#metalSlider)\" stroke=\"#475569\" stroke-width=\"1.5\" />\n  <rect x=\"122\" y=\"45\" width=\"22\" height=\"32\" rx=\"3\" fill=\"#0f172a\" />\n  <!-- Arrow on Shutter -->\n  <path d=\"M185 70 L195 70 L195 65 L202 72 L195 79 L195 74 L185 74 Z\" fill=\"#475569\" />\n  <!-- Blank Paper Label with lines (No text spoilers) -->\n  <rect x=\"100\" y=\"98\" width=\"120\" height=\"60\" rx=\"3\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1\" />\n  <rect x=\"106\" y=\"104\" width=\"108\" height=\"10\" fill=\"#ef4444\" opacity=\"0.8\" rx=\"1\" />\n  <line x1=\"108\" y1=\"124\" x2=\"210\" y2=\"124\" stroke=\"#94a3b8\" stroke-width=\"1.5\" stroke-dasharray=\"4,3\" />\n  <line x1=\"108\" y1=\"136\" x2=\"210\" y2=\"136\" stroke=\"#94a3b8\" stroke-width=\"1.5\" stroke-dasharray=\"4,3\" />\n  <line x1=\"108\" y1=\"148\" x2=\"180\" y2=\"148\" stroke=\"#94a3b8\" stroke-width=\"1.5\" stroke-dasharray=\"4,3\" />\n  <!-- Write Protect Notch -->\n  <rect x=\"220\" y=\"152\" width=\"10\" height=\"9\" fill=\"#000000\" />\n</svg>", "question": "Qual é o dispositivo magnético histórico ilustrado, feito com invólucro plástico rígido, janela metálica deslizante e capacidade padrão de 1,44 MB?", "options": ["Disquete de 3 ½ polegadas", "Disco Rígido Portátil", "Unidade Blu-ray"], "correctIndex": 0, "explanation": "O disquete de 3 ½ polegadas representou a evolução dos antigos disquetes flexíveis, trazendo corpo mais rígido, proteção metálica e 1,44 MB de capacidade."}, {"id": 7, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <radialGradient id=\"discGrad\" cx=\"50%\" cy=\"50%\" r=\"50%\">\n      <stop offset=\"0%\" stop-color=\"#1e1b4b\" />\n      <stop offset=\"30%\" stop-color=\"#1e40af\" />\n      <stop offset=\"65%\" stop-color=\"#3b82f6\" />\n      <stop offset=\"85%\" stop-color=\"#60a5fa\" />\n      <stop offset=\"100%\" stop-color=\"#1e3a8a\" />\n    </radialGradient>\n    <filter id=\"laserGlow\" x=\"-50%\" y=\"-50%\" width=\"200%\" height=\"200%\">\n      <feGaussianBlur stdDeviation=\"4\" result=\"glow\" />\n      <feComposite in=\"SourceGraphic\" in2=\"glow\" operator=\"over\" />\n    </filter>\n  </defs>\n  <!-- Shadow -->\n  <ellipse cx=\"140\" cy=\"170\" rx=\"85\" ry=\"12\" fill=\"#000000\" opacity=\"0.35\" />\n  <!-- Optical Disc Surface -->\n  <circle cx=\"140\" cy=\"100\" r=\"70\" fill=\"url(#discGrad)\" stroke=\"#93c5fd\" stroke-width=\"2\" />\n  <!-- Iridescent Sheen Rings -->\n  <circle cx=\"140\" cy=\"100\" r=\"55\" fill=\"none\" stroke=\"#67e8f9\" stroke-width=\"1.5\" stroke-dasharray=\"20,10\" opacity=\"0.75\" />\n  <circle cx=\"140\" cy=\"100\" r=\"40\" fill=\"none\" stroke=\"#c084fc\" stroke-width=\"1.5\" stroke-dasharray=\"15,8\" opacity=\"0.65\" />\n  <!-- Center Clear Ring and Hole -->\n  <circle cx=\"140\" cy=\"100\" r=\"25\" fill=\"#0f172a\" stroke=\"#cbd5e1\" stroke-width=\"2\" />\n  <circle cx=\"140\" cy=\"100\" r=\"10\" fill=\"#030712\" />\n  <!-- Laser Emitter Head -->\n  <rect x=\"230\" y=\"42\" width=\"36\" height=\"26\" rx=\"4\" fill=\"#1e293b\" stroke=\"#38bdf8\" stroke-width=\"2\" />\n  <circle cx=\"236\" cy=\"55\" r=\"4.5\" fill=\"#38bdf8\" filter=\"url(#laserGlow)\" />\n  <!-- Intense Blue Laser Beam (No text spoilers) -->\n  <line x1=\"236\" y1=\"55\" x2=\"175\" y2=\"105\" stroke=\"#00f0ff\" stroke-width=\"3.5\" filter=\"url(#laserGlow)\" />\n  <circle cx=\"175\" cy=\"105\" r=\"5\" fill=\"#ffffff\" filter=\"url(#laserGlow)\" />\n</svg>", "question": "O disco óptico da imagem está sendo lido por um feixe de laser de cor AZUL. Qual é esse dispositivo de alta capacidade?", "options": ["Unidade de Fita Perfurada", "Unidade de DVD-R", "Unidade de Blu-ray"], "correctIndex": 2, "explanation": "O Blu-ray recebeu esse nome pelo uso do laser azul-violeta, que possui comprimento de onda menor e permite gravar até 33,4 GB por camada."}, {"id": 8, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"chipBody\" x1=\"0%\" y1=\"0%\" x2=\"0%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#27272a\" />\n      <stop offset=\"50%\" stop-color=\"#18181b\" />\n      <stop offset=\"100%\" stop-color=\"#09090b\" />\n    </linearGradient>\n    <linearGradient id=\"metalLegs\" x1=\"0%\" y1=\"0%\" x2=\"0%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#f8fafc\" />\n      <stop offset=\"100%\" stop-color=\"#64748b\" />\n    </linearGradient>\n  </defs>\n  <!-- Shadow -->\n  <ellipse cx=\"160\" cy=\"165\" rx=\"100\" ry=\"12\" fill=\"#000000\" opacity=\"0.35\" />\n  <!-- Metal DIP Legs on both sides -->\n  <g fill=\"url(#metalLegs)\">\n    <rect x=\"75\" y=\"45\" width=\"8\" height=\"15\" rx=\"1\" />\n    <rect x=\"95\" y=\"45\" width=\"8\" height=\"15\" rx=\"1\" />\n    <rect x=\"115\" y=\"45\" width=\"8\" height=\"15\" rx=\"1\" />\n    <rect x=\"135\" y=\"45\" width=\"8\" height=\"15\" rx=\"1\" />\n    <rect x=\"155\" y=\"45\" width=\"8\" height=\"15\" rx=\"1\" />\n    <rect x=\"175\" y=\"45\" width=\"8\" height=\"15\" rx=\"1\" />\n    <rect x=\"195\" y=\"45\" width=\"8\" height=\"15\" rx=\"1\" />\n    <rect x=\"215\" y=\"45\" width=\"8\" height=\"15\" rx=\"1\" />\n    <rect x=\"235\" y=\"45\" width=\"8\" height=\"15\" rx=\"1\" />\n    <rect x=\"75\" y=\"140\" width=\"8\" height=\"15\" rx=\"1\" />\n    <rect x=\"95\" y=\"140\" width=\"8\" height=\"15\" rx=\"1\" />\n    <rect x=\"115\" y=\"140\" width=\"8\" height=\"15\" rx=\"1\" />\n    <rect x=\"135\" y=\"140\" width=\"8\" height=\"15\" rx=\"1\" />\n    <rect x=\"155\" y=\"140\" width=\"8\" height=\"15\" rx=\"1\" />\n    <rect x=\"175\" y=\"140\" width=\"8\" height=\"15\" rx=\"1\" />\n    <rect x=\"195\" y=\"140\" width=\"8\" height=\"15\" rx=\"1\" />\n    <rect x=\"215\" y=\"140\" width=\"8\" height=\"15\" rx=\"1\" />\n    <rect x=\"235\" y=\"140\" width=\"8\" height=\"15\" rx=\"1\" />\n  </g>\n  <!-- Chip Package -->\n  <rect x=\"60\" y=\"55\" width=\"200\" height=\"90\" rx=\"8\" fill=\"url(#chipBody)\" stroke=\"#52525b\" stroke-width=\"2.5\" />\n  <!-- Notch -->\n  <path d=\"M60 92 A 8 8 0 0 1 60 108 Z\" fill=\"#09090b\" stroke=\"#52525b\" stroke-width=\"1.5\" />\n  <!-- Holographic Shield Sticker (Without text spoiler) -->\n  <rect x=\"90\" y=\"70\" width=\"140\" height=\"60\" rx=\"4\" fill=\"#1e3a8a\" stroke=\"#60a5fa\" stroke-width=\"1.5\" />\n  <!-- Silicon microchip artwork -->\n  <rect x=\"145\" y=\"85\" width=\"30\" height=\"30\" rx=\"3\" fill=\"#0f172a\" stroke=\"#facc15\" stroke-width=\"1.5\" />\n  <circle cx=\"160\" cy=\"100\" r=\"6\" fill=\"#facc15\" />\n  <line x1=\"105\" y1=\"100\" x2=\"145\" y2=\"100\" stroke=\"#38bdf8\" stroke-width=\"2\" />\n  <line x1=\"175\" y1=\"100\" x2=\"215\" y2=\"100\" stroke=\"#38bdf8\" stroke-width=\"2\" />\n  <line x1=\"160\" y1=\"75\" x2=\"160\" y2=\"85\" stroke=\"#38bdf8\" stroke-width=\"2\" />\n  <line x1=\"160\" y1=\"115\" x2=\"160\" y2=\"125\" stroke=\"#38bdf8\" stroke-width=\"2\" />\n</svg>", "question": "Qual é o circuito integrado mostrado na imagem, que contém instruções gravadas de fábrica de forma permanente para a inicialização básica do sistema?", "options": ["Memória ROM", "Fita DDS", "Memória RAM"], "correctIndex": 0, "explanation": "A Memória ROM (Read-Only Memory) é não volátil e somente para leitura, armazenando o firmware (como BIOS/UEFI) indispensável para ligar o computador."}, {"id": 9, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"cardPaper\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#fef3c7\" />\n      <stop offset=\"50%\" stop-color=\"#fde68a\" />\n      <stop offset=\"100%\" stop-color=\"#f59e0b\" />\n    </linearGradient>\n  </defs>\n  <!-- Shadow -->\n  <ellipse cx=\"160\" cy=\"175\" rx=\"120\" ry=\"10\" fill=\"#000000\" opacity=\"0.3\" />\n  <!-- Card with Cut Corner on Left -->\n  <polygon points=\"65,40 50,55 50,155 270,155 270,40\" fill=\"url(#cardPaper)\" stroke=\"#b45309\" stroke-width=\"2\" />\n  <!-- Punched Rectangular Holes (No text spoilers) -->\n  <g fill=\"#0f172a\">\n    <rect x=\"75\" y=\"65\" width=\"5\" height=\"10\" rx=\"1\" />\n    <rect x=\"75\" y=\"95\" width=\"5\" height=\"10\" rx=\"1\" />\n    <rect x=\"90\" y=\"75\" width=\"5\" height=\"10\" rx=\"1\" />\n    <rect x=\"90\" y=\"120\" width=\"5\" height=\"10\" rx=\"1\" />\n    <rect x=\"105\" y=\"85\" width=\"5\" height=\"10\" rx=\"1\" />\n    <rect x=\"120\" y=\"65\" width=\"5\" height=\"10\" rx=\"1\" />\n    <rect x=\"120\" y=\"105\" width=\"5\" height=\"10\" rx=\"1\" />\n    <rect x=\"135\" y=\"75\" width=\"5\" height=\"10\" rx=\"1\" />\n    <rect x=\"135\" y=\"130\" width=\"5\" height=\"10\" rx=\"1\" />\n    <rect x=\"150\" y=\"95\" width=\"5\" height=\"10\" rx=\"1\" />\n    <rect x=\"165\" y=\"65\" width=\"5\" height=\"10\" rx=\"1\" />\n    <rect x=\"165\" y=\"115\" width=\"5\" height=\"10\" rx=\"1\" />\n    <rect x=\"180\" y=\"85\" width=\"5\" height=\"10\" rx=\"1\" />\n    <rect x=\"195\" y=\"105\" width=\"5\" height=\"10\" rx=\"1\" />\n    <rect x=\"210\" y=\"65\" width=\"5\" height=\"10\" rx=\"1\" />\n    <rect x=\"210\" y=\"125\" width=\"5\" height=\"10\" rx=\"1\" />\n    <rect x=\"225\" y=\"75\" width=\"5\" height=\"10\" rx=\"1\" />\n    <rect x=\"240\" y=\"95\" width=\"5\" height=\"10\" rx=\"1\" />\n  </g>\n  <!-- Printed grid guide lines -->\n  <line x1=\"65\" y1=\"55\" x2=\"255\" y2=\"55\" stroke=\"#d97706\" stroke-width=\"1\" stroke-dasharray=\"2,3\" opacity=\"0.6\" />\n  <line x1=\"65\" y1=\"145\" x2=\"255\" y2=\"145\" stroke=\"#d97706\" stroke-width=\"1\" stroke-dasharray=\"2,3\" opacity=\"0.6\" />\n</svg>", "question": "Qual tecnologia pioneira da computação está ilustrada neste cartão de papelão, no qual a presença ou ausência de furos representava códigos binários?", "options": ["Unidade Zip", "Cartão de Memória SD", "Cartão Perfurado"], "correctIndex": 2, "explanation": "Os cartões perfurados foram um dos primeiros suportes de dados da história: cada orifício perfurado em posição exata representava o bit 1, e a ausência representava 0."}, {"id": 10, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"drumCylinder\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#78350f\" />\n      <stop offset=\"35%\" stop-color=\"#b45309\" />\n      <stop offset=\"65%\" stop-color=\"#d97706\" />\n      <stop offset=\"100%\" stop-color=\"#451a03\" />\n    </linearGradient>\n  </defs>\n  <!-- Shadow -->\n  <ellipse cx=\"160\" cy=\"175\" rx=\"110\" ry=\"12\" fill=\"#000000\" opacity=\"0.35\" />\n  <!-- Stand / Base -->\n  <rect x=\"70\" y=\"150\" width=\"180\" height=\"18\" rx=\"4\" fill=\"#334155\" stroke=\"#475569\" stroke-width=\"2\" />\n  <rect x=\"85\" y=\"55\" width=\"15\" height=\"100\" fill=\"#475569\" />\n  <rect x=\"220\" y=\"55\" width=\"15\" height=\"100\" fill=\"#475569\" />\n  <!-- Central Shaft -->\n  <rect x=\"80\" y=\"96\" width=\"160\" height=\"8\" fill=\"#94a3b8\" />\n  <!-- Rotating Drum Cylinder (Coated with iron oxide) -->\n  <rect x=\"105\" y=\"45\" width=\"110\" height=\"110\" rx=\"8\" fill=\"url(#drumCylinder)\" stroke=\"#f59e0b\" stroke-width=\"2\" />\n  <!-- Magnetic Tracks Lines -->\n  <line x1=\"105\" y1=\"65\" x2=\"215\" y2=\"65\" stroke=\"#fef3c7\" stroke-width=\"1.5\" stroke-dasharray=\"6,4\" opacity=\"0.6\" />\n  <line x1=\"105\" y1=\"85\" x2=\"215\" y2=\"85\" stroke=\"#fef3c7\" stroke-width=\"1.5\" stroke-dasharray=\"6,4\" opacity=\"0.6\" />\n  <line x1=\"105\" y1=\"105\" x2=\"215\" y2=\"105\" stroke=\"#fef3c7\" stroke-width=\"1.5\" stroke-dasharray=\"6,4\" opacity=\"0.6\" />\n  <line x1=\"105\" y1=\"125\" x2=\"215\" y2=\"125\" stroke=\"#fef3c7\" stroke-width=\"1.5\" stroke-dasharray=\"6,4\" opacity=\"0.6\" />\n  <line x1=\"105\" y1=\"140\" x2=\"215\" y2=\"140\" stroke=\"#fef3c7\" stroke-width=\"1.5\" stroke-dasharray=\"6,4\" opacity=\"0.6\" />\n  <!-- Sensor Heads Array on top (No text labels) -->\n  <rect x=\"130\" y=\"32\" width=\"60\" height=\"15\" rx=\"3\" fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"1.5\" />\n  <circle cx=\"140\" cy=\"40\" r=\"2.5\" fill=\"#ef4444\" />\n  <circle cx=\"160\" cy=\"40\" r=\"2.5\" fill=\"#ef4444\" />\n  <circle cx=\"180\" cy=\"40\" r=\"2.5\" fill=\"#ef4444\" />\n</svg>", "question": "Qual dispositivo histórico de memória, inventado em 1932 e formado por um cilindro metálico giratório revestido com óxido de ferro, está representado na imagem?", "options": ["Unidade de Estado Sólido", "Tambor Magnético", "DVD-RW"], "correctIndex": 1, "explanation": "O Tambor Magnético foi criado em 1932 e serviu como uma das primeiras memórias principais de computadores eletrônicos, recuperando dados em altas velocidades de rotação."}, {"id": 11, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"datBody\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#374151\" />\n      <stop offset=\"50%\" stop-color=\"#1f2937\" />\n      <stop offset=\"100%\" stop-color=\"#111827\" />\n    </linearGradient>\n  </defs>\n  <!-- Shadow -->\n  <ellipse cx=\"160\" cy=\"175\" rx=\"105\" ry=\"10\" fill=\"#000000\" opacity=\"0.35\" />\n  <!-- Cassette Housing -->\n  <rect x=\"65\" y=\"35\" width=\"190\" height=\"130\" rx=\"8\" fill=\"url(#datBody)\" stroke=\"#9ca3af\" stroke-width=\"2.5\" />\n  <!-- Top Label Recess (Blank, no text) -->\n  <rect x=\"80\" y=\"48\" width=\"160\" height=\"40\" rx=\"4\" fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"1.5\" />\n  <line x1=\"90\" y1=\"68\" x2=\"230\" y2=\"68\" stroke=\"#bae6fd\" stroke-width=\"2\" stroke-dasharray=\"8,4\" />\n  <!-- Transparent tape view window -->\n  <rect x=\"95\" y=\"98\" width=\"130\" height=\"50\" rx=\"6\" fill=\"#111827\" stroke=\"#4b5563\" stroke-width=\"1.5\" />\n  <!-- Left Reel -->\n  <circle cx=\"125\" cy=\"122\" r=\"18\" fill=\"#1f2937\" stroke=\"#d1d5db\" stroke-width=\"2\" />\n  <circle cx=\"125\" cy=\"122\" r=\"8\" fill=\"#000000\" />\n  <!-- Right Reel -->\n  <circle cx=\"195\" cy=\"122\" r=\"18\" fill=\"#1f2937\" stroke=\"#d1d5db\" stroke-width=\"2\" />\n  <circle cx=\"195\" cy=\"122\" r=\"8\" fill=\"#000000\" />\n  <!-- Magnetic tape path -->\n  <line x1=\"125\" y1=\"135\" x2=\"195\" y2=\"135\" stroke=\"#78350f\" stroke-width=\"5\" />\n</svg>", "question": "Qual formato de fita magnética compacta, desenvolvida para gravação e leitura de áudio digital, é apresentado na imagem?", "options": ["Unidade de Disco Flexível", "Fita Cassete Magnética (DAT)", "Unidade de CD-RW"], "correctIndex": 1, "explanation": "A fita DAT (Digital Audio Tape) foi um sistema de fita magnética que operava de modo semelhante às fitas cassete analógicas, mas gravando sinais digitais de áudio."}, {"id": 12, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"zipBody\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#1e3a8a\" />\n      <stop offset=\"50%\" stop-color=\"#172554\" />\n      <stop offset=\"100%\" stop-color=\"#0f172a\" />\n    </linearGradient>\n  </defs>\n  <!-- Shadow -->\n  <ellipse cx=\"160\" cy=\"178\" rx=\"95\" ry=\"10\" fill=\"#000000\" opacity=\"0.35\" />\n  <!-- Chunky Square Cartridge Body -->\n  <rect x=\"75\" y=\"30\" width=\"170\" height=\"142\" rx=\"12\" fill=\"url(#zipBody)\" stroke=\"#3b82f6\" stroke-width=\"3\" />\n  <!-- Circular Metal Shutter (No text spoiler) -->\n  <rect x=\"110\" y=\"30\" width=\"100\" height=\"48\" rx=\"4\" fill=\"#94a3b8\" stroke=\"#cbd5e1\" stroke-width=\"1.5\" />\n  <circle cx=\"160\" cy=\"54\" r=\"14\" fill=\"#1e293b\" />\n  <!-- Central Blank Recess -->\n  <rect x=\"95\" y=\"90\" width=\"130\" height=\"65\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1\" />\n  <circle cx=\"160\" cy=\"122\" r=\"18\" fill=\"#e2e8f0\" stroke=\"#94a3b8\" stroke-width=\"2\" />\n  <circle cx=\"160\" cy=\"122\" r=\"6\" fill=\"#0f172a\" />\n</svg>", "question": "Qual suporte magnético dos anos 90, mais espesso que um disquete comum e com capacidades entre 100 MB e 750 MB, está ilustrado?", "options": ["Unidade Zip (Zip Disk)", "Memória ROM", "Cartão microSD"], "correctIndex": 0, "explanation": "As unidades Zip eram discos magnéticos de alta capacidade muito populares nos anos 90, mas acabaram substituídas pelas memórias flash USB."}, {"id": 13, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"extCase\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#475569\" />\n      <stop offset=\"50%\" stop-color=\"#334155\" />\n      <stop offset=\"100%\" stop-color=\"#1e293b\" />\n    </linearGradient>\n  </defs>\n  <!-- Shadow -->\n  <ellipse cx=\"150\" cy=\"175\" rx=\"110\" ry=\"12\" fill=\"#000000\" opacity=\"0.35\" />\n  <!-- USB Cable plugged in -->\n  <path d=\"M70 100 C20 100, 20 160, 50 160 C70 160, 80 140, 80 140\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"6\" stroke-linecap=\"round\" />\n  <rect x=\"58\" y=\"92\" width=\"18\" height=\"16\" rx=\"3\" fill=\"#0284c7\" />\n  <!-- Main Enclosure (No text spoilers) -->\n  <rect x=\"74\" y=\"40\" width=\"175\" height=\"115\" rx=\"14\" fill=\"url(#extCase)\" stroke=\"#94a3b8\" stroke-width=\"2.5\" />\n  <!-- Activity LED -->\n  <circle cx=\"225\" cy=\"58\" r=\"4\" fill=\"#38bdf8\" />\n  <!-- Minimalist recessed center panel -->\n  <rect x=\"95\" y=\"60\" width=\"115\" height=\"75\" rx=\"8\" fill=\"#0f172a\" stroke=\"#3b82f6\" stroke-width=\"1.5\" />\n  <circle cx=\"152\" cy=\"97\" r=\"16\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"2\" stroke-dasharray=\"6,4\" />\n</svg>", "question": "Qual dispositivo de armazenamento secundário portátil está ilustrado, conectando-se externamente ao computador por cabo USB para guardar grandes volumes de arquivos?", "options": ["Disco Rígido Portátil (HD Externo)", "Memória Cache", "Fita Perfurada"], "correctIndex": 0, "explanation": "O disco rígido portátil (HD externo) é a versão móvel do HDD tradicional, permitindo transportar terabytes de arquivos com conexão facilitada via USB."}, {"id": 14, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"tapeGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\">\n      <stop offset=\"0%\" stop-color=\"#fef08a\" />\n      <stop offset=\"50%\" stop-color=\"#fde047\" />\n      <stop offset=\"100%\" stop-color=\"#eab308\" />\n    </linearGradient>\n  </defs>\n  <!-- Shadow -->\n  <ellipse cx=\"160\" cy=\"170\" rx=\"125\" ry=\"10\" fill=\"#000000\" opacity=\"0.3\" />\n  <!-- Spool Roll -->\n  <circle cx=\"70\" cy=\"100\" r=\"45\" fill=\"#ca8a04\" stroke=\"#a16207\" stroke-width=\"3\" />\n  <circle cx=\"70\" cy=\"100\" r=\"30\" fill=\"#fde047\" stroke=\"#ca8a04\" stroke-width=\"2\" />\n  <circle cx=\"70\" cy=\"100\" r=\"14\" fill=\"#1e293b\" />\n  <!-- Continuous Paper Tape (No text spoilers) -->\n  <path d=\"M70 65 L275 65 L275 135 L70 135 Z\" fill=\"url(#tapeGrad)\" stroke=\"#a16207\" stroke-width=\"2\" />\n  <!-- Sprocket & Data Holes -->\n  <g fill=\"#0f172a\">\n    <circle cx=\"110\" cy=\"100\" r=\"2.5\" />\n    <circle cx=\"125\" cy=\"100\" r=\"2.5\" />\n    <circle cx=\"140\" cy=\"100\" r=\"2.5\" />\n    <circle cx=\"155\" cy=\"100\" r=\"2.5\" />\n    <circle cx=\"170\" cy=\"100\" r=\"2.5\" />\n    <circle cx=\"185\" cy=\"100\" r=\"2.5\" />\n    <circle cx=\"200\" cy=\"100\" r=\"2.5\" />\n    <circle cx=\"215\" cy=\"100\" r=\"2.5\" />\n    <circle cx=\"230\" cy=\"100\" r=\"2.5\" />\n    <circle cx=\"245\" cy=\"100\" r=\"2.5\" />\n    <circle cx=\"260\" cy=\"100\" r=\"2.5\" />\n    <circle cx=\"110\" cy=\"80\" r=\"4\" />\n    <circle cx=\"125\" cy=\"90\" r=\"4\" />\n    <circle cx=\"140\" cy=\"80\" r=\"4\" />\n    <circle cx=\"140\" cy=\"115\" r=\"4\" />\n    <circle cx=\"155\" cy=\"120\" r=\"4\" />\n    <circle cx=\"170\" cy=\"80\" r=\"4\" />\n    <circle cx=\"185\" cy=\"90\" r=\"4\" />\n    <circle cx=\"185\" cy=\"115\" r=\"4\" />\n    <circle cx=\"200\" cy=\"80\" r=\"4\" />\n    <circle cx=\"215\" cy=\"120\" r=\"4\" />\n    <circle cx=\"230\" cy=\"80\" r=\"4\" />\n    <circle cx=\"245\" cy=\"90\" r=\"4\" />\n    <circle cx=\"260\" cy=\"115\" r=\"4\" />\n  </g>\n</svg>", "question": "Qual suporte histórico contínuo em rolo de papel, com fileiras de orifícios binários para carregar instruções nos computadores, é exibido na imagem?", "options": ["Fita Perfurada", "Fita DDS", "Cabo Firewire"], "correctIndex": 0, "explanation": "A fita perfurada foi uma evolução dos cartões perfurados, organizando as instruções em uma longa tira contínua capaz de alimentar programas maiores."}, {"id": 15, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"sdGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#18181b\" />\n      <stop offset=\"60%\" stop-color=\"#27272a\" />\n      <stop offset=\"100%\" stop-color=\"#09090b\" />\n    </linearGradient>\n  </defs>\n  <!-- Shadow -->\n  <ellipse cx=\"160\" cy=\"178\" rx=\"80\" ry=\"10\" fill=\"#000000\" opacity=\"0.35\" />\n  <!-- SD Card Body with beveled corner at top right -->\n  <polygon points=\"105,35 195,35 215,55 215,160 105,160\" fill=\"url(#sdGrad)\" stroke=\"#52525b\" stroke-width=\"2.5\" />\n  <!-- Lock Switch Notch on Left (No text labels) -->\n  <rect x=\"100\" y=\"65\" width=\"8\" height=\"16\" rx=\"2\" fill=\"#eab308\" />\n  <!-- Contact Pins overlay -->\n  <g fill=\"#ca8a04\" opacity=\"0.35\">\n    <rect x=\"120\" y=\"38\" width=\"6\" height=\"12\" rx=\"1\" />\n    <rect x=\"130\" y=\"38\" width=\"6\" height=\"12\" rx=\"1\" />\n    <rect x=\"140\" y=\"38\" width=\"6\" height=\"12\" rx=\"1\" />\n    <rect x=\"150\" y=\"38\" width=\"6\" height=\"12\" rx=\"1\" />\n    <rect x=\"160\" y=\"38\" width=\"6\" height=\"12\" rx=\"1\" />\n    <rect x=\"170\" y=\"38\" width=\"6\" height=\"12\" rx=\"1\" />\n    <rect x=\"180\" y=\"38\" width=\"6\" height=\"12\" rx=\"1\" />\n  </g>\n  <!-- Front Design without text -->\n  <rect x=\"115\" y=\"85\" width=\"90\" height=\"65\" rx=\"4\" fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"1.5\" />\n  <circle cx=\"160\" cy=\"117\" r=\"16\" fill=\"#0369a1\" />\n  <path d=\"M152 117 L160 108 L168 117 Z\" fill=\"#facc15\" />\n</svg>", "question": "Qual tipo de memória portátil compacta, muito utilizada em smartphones e câmeras fotográficas para armazenar fotos e vídeos, está ilustrado?", "options": ["Cartão de Memória (Memória Flash)", "Disco Óptico DVD-ROM", "Unidade Magnética DDS"], "correctIndex": 0, "explanation": "Os cartões de memória (SD e microSD) utilizam chips de memória flash não voláteis, sendo extremamente compactos e resistentes."}, {"id": 16, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <linearGradient id=\"ddsBody\" x1=\"0%\" y1=\"0%\" x2=\"0%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#475569\" />\n      <stop offset=\"50%\" stop-color=\"#334155\" />\n      <stop offset=\"100%\" stop-color=\"#1e293b\" />\n    </linearGradient>\n  </defs>\n  <!-- Shadow -->\n  <ellipse cx=\"160\" cy=\"175\" rx=\"100\" ry=\"10\" fill=\"#000000\" opacity=\"0.35\" />\n  <!-- Cartridge Box -->\n  <rect x=\"75\" y=\"35\" width=\"170\" height=\"125\" rx=\"8\" fill=\"url(#ddsBody)\" stroke=\"#94a3b8\" stroke-width=\"2.5\" />\n  <!-- Sliding Metal Shutter Door (No text spoiler) -->\n  <rect x=\"90\" y=\"45\" width=\"140\" height=\"30\" rx=\"3\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.5\" />\n  <!-- Tape Hubs / Teeth -->\n  <circle cx=\"125\" cy=\"115\" r=\"16\" fill=\"#0f172a\" stroke=\"#64748b\" stroke-width=\"2\" />\n  <circle cx=\"195\" cy=\"115\" r=\"16\" fill=\"#0f172a\" stroke=\"#64748b\" stroke-width=\"2\" />\n  <circle cx=\"125\" cy=\"115\" r=\"7\" fill=\"#f59e0b\" />\n  <circle cx=\"195\" cy=\"115\" r=\"7\" fill=\"#f59e0b\" />\n</svg>", "question": "Qual sistema de fita magnética derivado do padrão DAT, amplamente empregado no passado para cópias de segurança (backup) em servidores, está representado?", "options": ["Unidade Blu-ray", "Memória RAM", "Fita Magnética (DDS)"], "correctIndex": 2, "explanation": "A fita DDS (Digital Data Storage) foi desenvolvida para armazenamento corporativo de dados em cartuchos com fita magnética semelhantes a pequenas fitas de vídeo."}, {"id": 17, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <!-- Shadow -->\n  <ellipse cx=\"160\" cy=\"175\" rx=\"130\" ry=\"12\" fill=\"#000000\" opacity=\"0.35\" />\n  <!-- Disc 1: Silver (Standard CD) -->\n  <g transform=\"translate(60, 100)\">\n    <circle cx=\"0\" cy=\"0\" r=\"42\" fill=\"#e2e8f0\" stroke=\"#94a3b8\" stroke-width=\"2\" />\n    <circle cx=\"0\" cy=\"0\" r=\"16\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.5\" />\n    <circle cx=\"0\" cy=\"0\" r=\"7\" fill=\"#0f172a\" />\n  </g>\n  <!-- Disc 2: Gold/Purple (DVD with red laser hint) -->\n  <g transform=\"translate(160, 95)\">\n    <circle cx=\"0\" cy=\"0\" r=\"46\" fill=\"#9333ea\" stroke=\"#eab308\" stroke-width=\"2.5\" />\n    <circle cx=\"0\" cy=\"0\" r=\"18\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"1.5\" />\n    <circle cx=\"0\" cy=\"0\" r=\"8\" fill=\"#0f172a\" />\n    <!-- Red laser dot -->\n    <circle cx=\"12\" cy=\"-12\" r=\"3\" fill=\"#ef4444\" />\n  </g>\n  <!-- Disc 3: Deep Blue with prominent Blue Laser (No text spoilers) -->\n  <g transform=\"translate(260, 90)\">\n    <circle cx=\"0\" cy=\"0\" r=\"50\" fill=\"#1d4ed8\" stroke=\"#38bdf8\" stroke-width=\"3\" />\n    <circle cx=\"0\" cy=\"0\" r=\"20\" fill=\"#0284c7\" stroke=\"#7dd3fc\" stroke-width=\"2\" />\n    <circle cx=\"0\" cy=\"0\" r=\"8\" fill=\"#0f172a\" />\n    <!-- Glowing Blue Laser Beam -->\n    <line x1=\"25\" y1=\"-45\" x2=\"14\" y2=\"-14\" stroke=\"#00f0ff\" stroke-width=\"3\" />\n    <circle cx=\"14\" cy=\"-14\" r=\"4.5\" fill=\"#ffffff\" />\n  </g>\n</svg>", "question": "Ao comparar diferentes discos ópticos, qual deles se destaca por utilizar um feixe de laser AZUL para alcançar uma densidade de gravação muito maior?", "options": ["CD-ROM", "Blu-ray", "DVD-ROM"], "correctIndex": 1, "explanation": "O disco Blu-ray utiliza laser azul-violeta com feixe muito mais fino, permitindo gravar trilhas muito mais compactas e armazenar muito mais dados."}, {"id": 18, "type": "visual", "category": "⚡ Primário vs Secundário", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <!-- Central Processor -->\n  <rect x=\"120\" y=\"25\" width=\"80\" height=\"50\" rx=\"8\" fill=\"#0f172a\" stroke=\"#f59e0b\" stroke-width=\"2.5\" />\n  <circle cx=\"160\" cy=\"50\" r=\"12\" fill=\"#f59e0b\" opacity=\"0.3\" />\n  <rect x=\"154\" y=\"44\" width=\"12\" height=\"12\" fill=\"#f59e0b\" rx=\"2\" />\n  <!-- Left Side: Fast/Temporary Module (Lightning symbol) -->\n  <rect x=\"20\" y=\"110\" width=\"125\" height=\"70\" rx=\"10\" fill=\"#065f46\" stroke=\"#34d399\" stroke-width=\"2.5\" />\n  <!-- Lightning Bolt for Temporary/Volatile speed -->\n  <path d=\"M85 125 L75 145 L87 145 L78 165 L98 140 L86 140 Z\" fill=\"#34d399\" />\n  <!-- Right Side: Permanent Storage Module (Padlock/Safe symbol) -->\n  <rect x=\"175\" y=\"110\" width=\"125\" height=\"70\" rx=\"10\" fill=\"#1e3a8a\" stroke=\"#60a5fa\" stroke-width=\"2.5\" />\n  <!-- Padlock representing permanent retention -->\n  <rect x=\"227\" y=\"140\" width=\"20\" height=\"18\" rx=\"3\" fill=\"#60a5fa\" />\n  <path d=\"M232 140 L232 132 A 5 5 0 0 1 242 132 L242 140\" fill=\"none\" stroke=\"#60a5fa\" stroke-width=\"2.5\" />\n  <!-- Connection Arrows -->\n  <path d=\"M140 75 L95 110\" stroke=\"#34d399\" stroke-width=\"3\" stroke-linecap=\"round\" />\n  <path d=\"M180 75 L225 110\" stroke=\"#60a5fa\" stroke-width=\"3\" stroke-linecap=\"round\" />\n</svg>", "question": "Na divisão entre memórias do computador, qual dos componentes abaixo atua como ARMAZENAMENTO PRIMÁRIO trabalhando diretamente com o processador?", "options": ["Memória RAM", "Pendrive USB", "Disco Rígido Externo"], "correctIndex": 0, "explanation": "O armazenamento primário compreende a memória RAM e a memória cache, responsáveis por fornecer dados imediatos em alta velocidade para o processador."}, {"id": 19, "type": "visual", "category": "🔬 Tecnologia Óptica", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <!-- Cross-section of Optical Disc Surface -->\n  <rect x=\"40\" y=\"110\" width=\"240\" height=\"40\" fill=\"#334155\" stroke=\"#94a3b8\" stroke-width=\"2\" />\n  <!-- Polycarbonate coating on top -->\n  <rect x=\"40\" y=\"70\" width=\"240\" height=\"40\" fill=\"#38bdf8\" opacity=\"0.2\" />\n  <!-- Profile of lands and pits -->\n  <path d=\"M40 110 \n           L80 110 \n           L80 125 L110 125 L110 110 \n           L150 110 \n           L150 125 L190 125 L190 110 \n           L240 110 \n           L240 125 L260 125 L260 110 L280 110\" fill=\"none\" stroke=\"#facc15\" stroke-width=\"3.5\" />\n  <!-- Laser Beam coming down (No text spoilers) -->\n  <polygon points=\"170,25 166,120 174,120\" fill=\"#ef4444\" opacity=\"0.75\" />\n  <line x1=\"170\" y1=\"25\" x2=\"170\" y2=\"120\" stroke=\"#ff0000\" stroke-width=\"2\" />\n  <circle cx=\"170\" cy=\"120\" r=\"3.5\" fill=\"#ffffff\" />\n  <!-- Reflected Ray -->\n  <line x1=\"170\" y1=\"120\" x2=\"210\" y2=\"35\" stroke=\"#ff0000\" stroke-width=\"1.5\" stroke-dasharray=\"4,3\" opacity=\"0.7\" />\n</svg>", "question": "A imagem ilustra um feixe de laser incidindo sobre fendas (pits) e planícies (lands) microscópicas. Esse princípio de funcionamento pertence a qual tecnologia?", "options": ["Armazenamento Magnético", "Armazenamento Mecânico Analógico", "Armazenamento Óptico"], "correctIndex": 2, "explanation": "O armazenamento óptico lê as variações de reflexão da luz laser sobre as planícies e fendas microscópicas gravadas na superfície reflexiva do disco."}, {"id": 20, "type": "visual", "category": "🔬 Comparativo de Tecnologias", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <!-- Left Box: Mechanical moving disc -->\n  <rect x=\"25\" y=\"25\" width=\"125\" height=\"150\" rx=\"10\" fill=\"#1e293b\" stroke=\"#f59e0b\" stroke-width=\"2\" />\n  <circle cx=\"87\" cy=\"85\" r=\"32\" fill=\"#64748b\" stroke=\"#94a3b8\" stroke-width=\"1.5\" />\n  <circle cx=\"87\" cy=\"85\" r=\"10\" fill=\"#1e293b\" />\n  <!-- Read arm -->\n  <line x1=\"115\" y1=\"85\" x2=\"92\" y2=\"72\" stroke=\"#ef4444\" stroke-width=\"2.5\" />\n  <!-- Rotation arrow indicating physical movement -->\n  <path d=\"M70 60 A 25 25 0 0 1 105 60\" fill=\"none\" stroke=\"#f59e0b\" stroke-width=\"2\" stroke-dasharray=\"3,3\" />\n  <!-- Right Box: Electronic solid-state chip -->\n  <rect x=\"170\" y=\"25\" width=\"125\" height=\"150\" rx=\"10\" fill=\"#0f172a\" stroke=\"#10b981\" stroke-width=\"2\" />\n  <g fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"1\">\n    <rect x=\"190\" y=\"65\" width=\"35\" height=\"25\" rx=\"2\" />\n    <rect x=\"235\" y=\"65\" width=\"35\" height=\"25\" rx=\"2\" />\n    <rect x=\"190\" y=\"100\" width=\"35\" height=\"25\" rx=\"2\" />\n    <rect x=\"235\" y=\"100\" width=\"35\" height=\"25\" rx=\"2\" />\n  </g>\n  <circle cx=\"230\" cy=\"145\" r=\"6\" fill=\"#10b981\" />\n</svg>", "question": "Ao comparar a tecnologia de um HDD mecânico com a de um SSD eletrônico, qual é uma característica EXCLUSIVA do SSD?", "options": ["Não possui nenhuma parte mecânica móvel", "Funciona com pratos giratórios metálicos", "Grava dados exclusivamente em fita magnética"], "correctIndex": 0, "explanation": "O SSD é 100% eletrônico (estado sólido), não possuindo motores, pratos giratórios ou cabeçotes móveis, o que evita quebras mecânicas e acelera o acesso."}, {"id": 21, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <!-- Multi-card peripheral box -->\n  <rect x=\"70\" y=\"45\" width=\"180\" height=\"110\" rx=\"12\" fill=\"#1e293b\" stroke=\"#38bdf8\" stroke-width=\"2.5\" />\n  <!-- Slot 1 (Standard card) -->\n  <rect x=\"95\" y=\"68\" width=\"80\" height=\"8\" rx=\"2\" fill=\"#090d16\" stroke=\"#64748b\" />\n  <!-- Slot 2 (Micro card) -->\n  <rect x=\"95\" y=\"90\" width=\"45\" height=\"6\" rx=\"2\" fill=\"#090d16\" stroke=\"#64748b\" />\n  <!-- Slot 3 (Wide card) -->\n  <rect x=\"95\" y=\"110\" width=\"110\" height=\"11\" rx=\"2\" fill=\"#090d16\" stroke=\"#64748b\" />\n  <!-- Output USB Cable (No text) -->\n  <path d=\"M250 100 L285 100\" stroke=\"#64748b\" stroke-width=\"5\" />\n  <rect x=\"285\" y=\"93\" width=\"15\" height=\"14\" rx=\"2\" fill=\"#0284c7\" />\n  <circle cx=\"215\" cy=\"72\" r=\"3\" fill=\"#22c55e\" />\n</svg>", "question": "Qual dispositivo periférico está ilustrado, projetado com múltiplas ranhuras para ler cartões de câmeras digitais e transferir os dados via USB?", "options": ["Unidade de Fita DAT", "Unidade de Memória Flash", "Unidade Zip"], "correctIndex": 1, "explanation": "As unidades de memória flash (leitores de cartões) funcionam como pontes para conectar cartões de câmeras e dispositivos móveis ao computador."}, {"id": 22, "type": "visual", "category": "📸 Identificação Visual", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <!-- Iridescent Purple Optical Disc without spoiler text -->\n  <circle cx=\"160\" cy=\"100\" r=\"70\" fill=\"#581c87\" stroke=\"#eab308\" stroke-width=\"3\" />\n  <circle cx=\"160\" cy=\"100\" r=\"55\" fill=\"none\" stroke=\"#f472b6\" stroke-width=\"2\" stroke-dasharray=\"18,12\" opacity=\"0.7\" />\n  <circle cx=\"160\" cy=\"100\" r=\"24\" fill=\"#1e1b4b\" stroke=\"#cbd5e1\" stroke-width=\"2\" />\n  <circle cx=\"160\" cy=\"100\" r=\"10\" fill=\"#030712\" />\n  <!-- Circular rewrite arrows icon in center ring -->\n  <path d=\"M148 100 A 12 12 0 0 1 172 100\" fill=\"none\" stroke=\"#fde047\" stroke-width=\"2\" />\n  <path d=\"M172 100 A 12 12 0 0 1 148 100\" fill=\"none\" stroke=\"#fde047\" stroke-width=\"2\" />\n</svg>", "question": "Um disco óptico classificado como 'RW' (como um DVD-RW ou CD-RW) possui qual característica funcional principal?", "options": ["Permite que seus dados sejam gravados, apagados e regravados várias vezes", "Pode ser lido apenas uma única vez na vida", "Funciona com rotação de óxido de ferro"], "correctIndex": 0, "explanation": "A sigla 'RW' significa ReWritable (Regravável), indicando que o usuário pode apagar arquivos antigos e gravar novos dados múltiplas vezes na mesma mídia."}, {"id": 23, "type": "visual", "category": "☁️ Armazenamento em Nuvem", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <!-- Network Server Towers connected to Cloud -->\n  <path d=\"M125 55 A 18 18 0 0 1 155 35 A 25 25 0 0 1 195 42 A 18 18 0 0 1 200 65 L125 65 Z\" fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"2\" />\n  <!-- Server Tower 1 -->\n  <rect x=\"55\" y=\"85\" width=\"55\" height=\"80\" rx=\"4\" fill=\"#1e293b\" stroke=\"#475569\" stroke-width=\"2\" />\n  <line x1=\"55\" y1=\"105\" x2=\"110\" y2=\"105\" stroke=\"#334155\" stroke-width=\"2\" />\n  <line x1=\"55\" y1=\"125\" x2=\"110\" y2=\"125\" stroke=\"#334155\" stroke-width=\"2\" />\n  <circle cx=\"65\" cy=\"95\" r=\"2.5\" fill=\"#22c55e\" />\n  <circle cx=\"73\" cy=\"95\" r=\"2.5\" fill=\"#38bdf8\" />\n  <!-- Server Tower 2 -->\n  <rect x=\"132\" y=\"85\" width=\"55\" height=\"80\" rx=\"4\" fill=\"#1e293b\" stroke=\"#475569\" stroke-width=\"2\" />\n  <line x1=\"132\" y1=\"105\" x2=\"187\" y2=\"105\" stroke=\"#334155\" stroke-width=\"2\" />\n  <line x1=\"132\" y1=\"125\" x2=\"187\" y2=\"125\" stroke=\"#334155\" stroke-width=\"2\" />\n  <circle cx=\"142\" cy=\"95\" r=\"2.5\" fill=\"#22c55e\" />\n  <circle cx=\"150\" cy=\"95\" r=\"2.5\" fill=\"#38bdf8\" />\n  <!-- Server Tower 3 -->\n  <rect x=\"210\" y=\"85\" width=\"55\" height=\"80\" rx=\"4\" fill=\"#1e293b\" stroke=\"#475569\" stroke-width=\"2\" />\n  <line x1=\"210\" y1=\"105\" x2=\"265\" y2=\"105\" stroke=\"#334155\" stroke-width=\"2\" />\n  <line x1=\"210\" y1=\"125\" x2=\"265\" y2=\"125\" stroke=\"#334155\" stroke-width=\"2\" />\n  <circle cx=\"220\" cy=\"95\" r=\"2.5\" fill=\"#22c55e\" />\n  <circle cx=\"228\" cy=\"95\" r=\"2.5\" fill=\"#38bdf8\" />\n  <!-- Connection lines to cloud -->\n  <line x1=\"82\" y1=\"85\" x2=\"140\" y2=\"60\" stroke=\"#38bdf8\" stroke-width=\"2\" stroke-dasharray=\"3,3\" />\n  <line x1=\"160\" y1=\"85\" x2=\"160\" y2=\"60\" stroke=\"#38bdf8\" stroke-width=\"2\" stroke-dasharray=\"3,3\" />\n  <line x1=\"237\" y1=\"85\" x2=\"180\" y2=\"60\" stroke=\"#38bdf8\" stroke-width=\"2\" stroke-dasharray=\"3,3\" />\n</svg>", "question": "Onde ficam guardados fisicamente os arquivos quando utilizamos serviços de armazenamento em nuvem?", "options": ["Em servidores remotos mantidos em data centers conectados à internet", "Em tiras de papel perfurado guardadas no monitor", "Na placa de circuito do teclado do usuário"], "correctIndex": 0, "explanation": "A nuvem é composta por grandes centros de dados (data centers) com servidores conectados à internet ininterruptamente, onde os dados ficam salvos em discos e SSDs."}, {"id": 24, "type": "visual", "category": "⚡ Primário vs Secundário", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <!-- Processor Die -->\n  <rect x=\"40\" y=\"35\" width=\"160\" height=\"130\" rx=\"10\" fill=\"#0f172a\" stroke=\"#38bdf8\" stroke-width=\"2.5\" />\n  <!-- Core Blocks -->\n  <rect x=\"55\" y=\"70\" width=\"60\" height=\"35\" rx=\"4\" fill=\"#1e293b\" stroke=\"#64748b\" />\n  <rect x=\"55\" y=\"112\" width=\"60\" height=\"35\" rx=\"4\" fill=\"#1e293b\" stroke=\"#64748b\" />\n  <!-- Ultra-fast Internal Memory Block right beside cores (No text) -->\n  <rect x=\"125\" y=\"70\" width=\"65\" height=\"77\" rx=\"4\" fill=\"#047857\" stroke=\"#34d399\" stroke-width=\"2\" />\n  <circle cx=\"157\" cy=\"108\" r=\"10\" fill=\"#34d399\" opacity=\"0.4\" />\n  <!-- External Main Module on Right -->\n  <rect x=\"230\" y=\"55\" width=\"55\" height=\"90\" rx=\"4\" fill=\"#065f46\" stroke=\"#10b981\" stroke-width=\"2\" />\n  <line x1=\"190\" y1=\"100\" x2=\"230\" y2=\"100\" stroke=\"#facc15\" stroke-width=\"3\" />\n</svg>", "question": "A memória cache fica posicionada junto aos núcleos da CPU para máxima velocidade. Junto com a memória RAM, ela pertence a qual categoria?", "options": ["Armazenamento Primário", "Suporte Óptico Obsoleto", "Armazenamento Secundário"], "correctIndex": 0, "explanation": "Memória cache e RAM são dispositivos primários: trabalham lado a lado com a CPU e perdem suas informações quando a energia é interrompida."}, {"id": 25, "type": "visual", "category": "📊 Especificações e Capacidade", "imageSvg": "<svg viewBox=\"0 0 320 200\" class=\"w-full h-full max-h-48 mx-auto\" xmlns=\"http://www.w3.org/2000/svg\">\n  <!-- Floppy Disk front without text spoiler -->\n  <rect x=\"95\" y=\"30\" width=\"130\" height=\"135\" rx=\"6\" fill=\"#1e3a8a\" stroke=\"#60a5fa\" stroke-width=\"3\" />\n  <rect x=\"115\" y=\"30\" width=\"80\" height=\"45\" rx=\"2\" fill=\"#cbd5e1\" stroke=\"#64748b\" />\n  <rect x=\"125\" y=\"38\" width=\"18\" height=\"26\" rx=\"2\" fill=\"#0f172a\" />\n  <rect x=\"110\" y=\"85\" width=\"100\" height=\"65\" rx=\"3\" fill=\"#f8fafc\" />\n  <line x1=\"120\" y1=\"105\" x2=\"200\" y2=\"105\" stroke=\"#94a3b8\" stroke-width=\"2\" />\n  <line x1=\"120\" y1=\"120\" x2=\"200\" y2=\"120\" stroke=\"#94a3b8\" stroke-width=\"2\" />\n  <line x1=\"120\" y1=\"135\" x2=\"175\" y2=\"135\" stroke=\"#94a3b8\" stroke-width=\"2\" />\n</svg>", "question": "Qual era a capacidade de armazenamento mais comum e padronizada do clássico disquete rígido de 3 ½ polegadas?", "options": ["4,7 GB", "700 MB", "1,44 MB"], "correctIndex": 2, "explanation": "O disquete de 3 ½ polegadas possuía 1,44 Megabytes de capacidade, espaço que na época era suficiente para armazenar documentos e pequenas planilhas."}, {"id": 26, "type": "textual", "category": "🧠 Conceitos Fundamentais", "question": "O que são dispositivos de armazenamento de dados?", "options": ["Componentes eletrônicos que servem para armazenar e recuperar informação digital em vários suportes físicos", "Cabos elétricos utilizados para conectar o computador à tomada", "Softwares de desenho vetorial para ilustrar sites na internet"], "correctIndex": 0, "explanation": "Dispositivos de armazenamento são os componentes eletrônicos responsáveis por registrar e ler dados em formato digital."}, {"id": 27, "type": "textual", "category": "🧠 Conceitos Fundamentais", "question": "Qual é a diferença entre um dispositivo de armazenamento e o seu SUPORTE (ou meio) de armazenamento?", "options": ["O suporte é o sistema operacional e o dispositivo é o usuário do computador", "O suporte é o veículo físico onde a informação reside (como discos ou chips), enquanto o dispositivo é o componente eletrônico que opera esse suporte", "Não há diferença, ambos são cabos de rede de fibra óptica"], "correctIndex": 1, "explanation": "O suporte (meio) é o veículo físico (o disco de alumínio, o policarbonato do DVD ou o silício do chip), enquanto o dispositivo é a unidade eletrônica que grava e lê os dados."}, {"id": 28, "type": "textual", "category": "⚡ Memória RAM", "question": "O que acontece com os dados armazenados na memória RAM quando o computador é desligado ou reiniciado?", "options": ["Os dados são impressos automaticamente em papel perfurado", "Eles permanecem gravados de forma permanente por vários anos", "Todo o conteúdo é completamente apagado"], "correctIndex": 2, "explanation": "A memória RAM é volátil, necessitando de eletricidade constante para manter os dados. Ao desligar a máquina, toda a memória RAM é limpa."}, {"id": 29, "type": "textual", "category": "⚡ Memória RAM", "question": "O que significa a sigla em inglês RAM?", "options": ["Rapid Action Mechanism (Mecanismo de Ação Rápida)", "Random Access Memory (Memória de Acesso Aleatório)", "Read And Modify (Leitura e Modificação Automática)"], "correctIndex": 1, "explanation": "RAM significa Random Access Memory, o que permite ao processador acessar qualquer endereço de dados na memória com a mesma agilidade."}, {"id": 30, "type": "textual", "category": "⚡ Memória ROM", "question": "O que significa a sigla em inglês ROM?", "options": ["Read-Only Memory (Memória Somente para Leitura)", "Rapid Optical Medium (Meio Óptico Rápido)", "Remote Operation Module (Módulo de Operação Remota)"], "correctIndex": 0, "explanation": "ROM significa Read-Only Memory. Ela vem gravada de fábrica com rotinas essenciais que o computador apenas lê e não altera no uso cotidiano."}, {"id": 31, "type": "textual", "category": "⚡ Primário vs Secundário", "question": "Qual é a diferença fundamental entre armazenamento primário e armazenamento secundário?", "options": ["O primário usa apenas cartões de papelão; o secundário usa apenas conexões via satélite", "O primário armazena dados temporários vitais para o processamento imediato; o secundário guarda arquivos de forma permanente", "O primário funciona sem eletricidade; o secundário exige baterias solares"], "correctIndex": 1, "explanation": "Dispositivos primários (RAM e cache) são ultra velozes e temporários; dispositivos secundários (HD, SSD, pendrive) preservam os arquivos mesmo sem energia."}, {"id": 32, "type": "textual", "category": "🧲 Tecnologia Magnética", "question": "Quais destes dispositivos utilizam tecnologia magnética (materiais ferromagnéticos) para gravar suas informações?", "options": ["Disquetes, unidades de disco rígido (HDD) e fitas magnéticas", "Cartões de memória microSD e pendrives USB", "Discos Blu-ray, DVDs e CDs"], "correctIndex": 0, "explanation": "HDDs, disquetes, fitas magnéticas e unidades Zip utilizam propriedades ferromagnéticas para reter os dados em padrões magnéticos."}, {"id": 33, "type": "textual", "category": "💡 Tecnologia Óptica", "question": "Como funcionam os dispositivos de armazenamento da categoria ÓPTICA para gravar e ler informações?", "options": ["Funcionam por meio de ímãs de geladeira colocados sobre circuitos", "Empregam agulhas metálicas que riscam discos de cera giratórios", "Utilizam feixes de laser que incidem sobre superfícies com fendas e planícies reflexivas"], "correctIndex": 2, "explanation": "Na tecnologia óptica (CD, DVD, Blu-ray), lasers de comprimentos de onda específicos lêem ou alteram fendas microscópicas que refletem a luz."}, {"id": 34, "type": "textual", "category": "⚡ Tecnologia Eletrônica", "question": "Os dispositivos de armazenamento eletrônico (como SSDs e pendrives) utilizam qual tipo de tecnologia?", "options": ["Discos de vidro acionados por engrenagens mecânicas", "Fitas plásticas cobertas com cola e pó de ferro", "Chips de memória flash ou memórias semicondutoras não voláteis"], "correctIndex": 2, "explanation": "Dispositivos eletrônicos usam circuitos integrados de silício (memória flash) sem nenhuma peça mecânica móvel."}, {"id": 35, "type": "textual", "category": "📊 Especificações e Capacidade", "question": "Uma unidade de DVD-ROM padrão suporta aproximadamente até quantas vezes a carga de informação de um CD comum?", "options": ["Exatamente a mesma quantidade de um CD", "Até sete vezes a carga de um CD", "Apenas metade da carga de um CD"], "correctIndex": 1, "explanation": "Enquanto um CD tradicional armazena cerca de 700 MB, um DVD padrão de camada simples armazena cerca de 4,7 GB (aproximadamente 7 vezes mais)."}, {"id": 36, "type": "textual", "category": "📊 Especificações e Capacidade", "question": "Qual é a capacidade máxima de armazenamento de dados suportada por uma unidade de Blu-ray POR CAMADA de gravação?", "options": ["Apenas 1,44 megabytes (MB)", "Até 33,4 gigabytes (GB)", "Cerca de 700 megabytes (MB)"], "correctIndex": 1, "explanation": "O formato Blu-ray consegue gravar até 33,4 GB por camada de gravação, graças à altíssima precisão e foco do seu laser azul."}, {"id": 37, "type": "textual", "category": "💡 Tecnologia Óptica", "question": "Por que a mídia Blu-ray consegue armazenar uma quantidade muito superior de dados no mesmo diâmetro de disco de um DVD?", "options": ["Porque o disco Blu-ray é fabricado com papelão perfurado mais denso", "Porque o leitor de Blu-ray opera em temperaturas congelantes", "Porque o laser azul possui comprimento de onda menor, permitindo focalizar fendas e trilhas muito menores"], "correctIndex": 2, "explanation": "O laser azul-violeta (405 nm) tem comprimento de onda muito mais curto que o laser vermelho do DVD (650 nm), criando pontos de foco muito menores."}, {"id": 38, "type": "textual", "category": "🕰️ Dispositivos Obsoletos", "question": "Como era feita a representação dos códigos binários nos antigos cartões perfurados?", "options": ["Os furos eram usados exclusivamente para prender os cartões em pastas", "Cada furo representava uma letra impressa com tinta magnética", "A presença de um furo indicava o valor 1 e a ausência de furo indicava o valor 0"], "correctIndex": 2, "explanation": "Nos cartões perfurados, leitores ópticos ou mecânicos registravam os dados: se havia furo (passagem de luz/contato), lia-se 1; sem furo, lia-se 0."}, {"id": 39, "type": "textual", "category": "🕰️ Dispositivos Obsoletos", "question": "Em que ano foram inventados os tambores magnéticos, considerados pioneiros na história da memória computacional?", "options": ["Em 1932", "Em 2012", "Em 1995"], "correctIndex": 0, "explanation": "Os tambores magnéticos foram inventados em 1932 pelo engenheiro Gustav Tauschek e foram amplamente empregados como memória nos primórdios da computação."}, {"id": 40, "type": "textual", "category": "🕰️ Dispositivos Obsoletos", "question": "Os tambores magnéticos pioneiros armazenavam informações em metais cilíndricos revestidos por camadas de qual material?", "options": ["Plástico reciclado", "Óxido de ferro", "Grafite escolar"], "correctIndex": 1, "explanation": "Os tambores metálicos eram recobertos de óxido de ferro ferromagnético, permitindo magnetizar pontos discretos em sua superfície giratória."}, {"id": 41, "type": "textual", "category": "🕰️ Dispositivos Obsoletos", "question": "O que significa a sigla da fita magnética DAT, criada para gravação de áudio digital?", "options": ["Data Automatic Terminal", "Direct Action Transfer", "Digital Audio Tape"], "correctIndex": 2, "explanation": "DAT significa Digital Audio Tape (Fita de Áudio Digital), formato lançado para registrar gravações digitais de som em fitas magnéticas."}, {"id": 42, "type": "textual", "category": "🕰️ Dispositivos Obsoletos", "question": "O que significa a sigla do sistema de fitas DDS, amplamente utilizado no passado para cópias de segurança (backup)?", "options": ["Direct Disk Sector", "Digital Data Storage", "Dynamic Drive System"], "correctIndex": 1, "explanation": "DDS significa Digital Data Storage (Armazenamento Digital de Dados), formato derivado do DAT para backup corporativo em fitas magnéticas."}, {"id": 43, "type": "textual", "category": "🕰️ Dispositivos Obsoletos", "question": "O que significa a sigla em inglês CD-ROM?", "options": ["Compact Disc Read-Only Memory", "Computer Data Read Operation Module", "Central Drive Record Output Machine"], "correctIndex": 0, "explanation": "CD-ROM significa Compact Disc Read-Only Memory (Disco Compacto com Memória Apenas para Leitura)."}, {"id": 44, "type": "textual", "category": "🕰️ Dispositivos Obsoletos", "question": "Qual tecnologia mais moderna e prática foi a principal responsável por substituir e tornar obsoletas as Unidades Zip (Zip Disks)?", "options": ["Novos tambores magnéticos de óxido de ferro", "Fitas perfuradas de papelão contínuo", "As memórias flash (como pendrives USB e cartões de memória)"], "correctIndex": 2, "explanation": "Os pendrives USB e cartões de memória flash eram muito menores, mais rápidos, resistentes e baratos, fazendo o Zip Drive cair rapidamente em desuso."}, {"id": 45, "type": "textual", "category": "🔬 Comparativo de Tecnologias", "question": "Quais são as principais vantagens práticas que uma unidade de estado sólido (SSD) oferece em relação a um disco rígido tradicional (HDD)?", "options": ["Capacidade de gravar arquivos em tiras de fita perfurada", "Presença de agulhas mecânicas que geram barulho para indicar funcionamento", "Maior velocidade de leitura e gravação, maior resistência a impactos e menor consumo de energia"], "correctIndex": 2, "explanation": "Sem componentes mecânicos móveis, o SSD consome menos energia, não é afetado por vibrações e alcança taxas de transferência muito mais altas que um HDD."}, {"id": 46, "type": "textual", "category": "📅 Vigentes vs Obsoletos", "question": "Qual dos seguintes dispositivos de armazenamento continua amplamente utilizado e classificado como VIGENTE na atualidade?", "options": ["Armazenamento na Nuvem", "Disquete de 3 ½ polegadas", "Cartão Perfurado"], "correctIndex": 0, "explanation": "O armazenamento em nuvem é uma tecnologia vigente em contínuo crescimento no mundo inteiro, ao passo que disquetes e cartões perfurados são peças de museu."}, {"id": 47, "type": "textual", "category": "📅 Vigentes vs Obsoletos", "question": "Qual dos seguintes dispositivos de armazenamento é considerado OBSOLETO (em desuso) na tecnologia moderna?", "options": ["Disco Rígido Portátil (HD Externo)", "Unidade de Estado Sólido (SSD)", "Unidade de Fita Perfurada"], "correctIndex": 2, "explanation": "A fita perfurada é uma tecnologia histórica obsoleta dos primeiros computadores, substituída há décadas por meios magnéticos, ópticos e semicondutores."}, {"id": 48, "type": "textual", "category": "💡 Tecnologia Óptica", "question": "Qual é a diferença operacional entre uma unidade de CD-ROM e uma unidade de CD-R/RW?", "options": ["Ambas são idênticas e só funcionam em câmeras fotográficas", "O CD-ROM serve apenas para ler mídias pré-gravadas; o CD-R/RW permite gravar e regravar arquivos no disco óptico", "O CD-ROM usa fita magnética; o CD-R/RW usa fita perfurada"], "correctIndex": 1, "explanation": "CD-ROM é apenas para leitura ('Read-Only'), enquanto o CD-R/RW permite ao usuário realizar gravações e regravações personalizadas de seus próprios dados."}, {"id": 49, "type": "textual", "category": "⚡ Memória ROM", "question": "Nos computadores atuais, qual é a principal finalidade da Memória ROM presente na placa-mãe?", "options": ["Guardar centenas de filmes em alta resolução baixados pelo usuário", "Armazenar o firmware (como a BIOS/UEFI) essencial para ligar o computador e iniciar o sistema operacional", "Salvar o histórico de navegação e as fotos de redes sociais"], "correctIndex": 1, "explanation": "A memória ROM retém o firmware de partida da máquina (como a BIOS/UEFI), responsável por testar os componentes e passar o controle para o sistema operacional."}, {"id": 50, "type": "textual", "category": "🔬 Tendências e Evolução", "question": "Por qual motivo os discos rígidos mecânicos (HDDs) estão sendo gradativamente substituídos por unidades de estado sólido (SSDs)?", "options": ["Porque os SSDs são feitos de papelão reciclado perfurado", "Devido à velocidade superior, maior confiabilidade mecânica e menor consumo de energia dos SSDs", "Porque os HDDs só funcionam conectados à internet"], "correctIndex": 1, "explanation": "Os SSDs trazem enormes ganhos de desempenho, ligam o computador em segundos e não têm pratos frágeis que podem riscar em choques mecânicos."}];
+
+    // GAME STATE
+    let deck = [];
+    let currentIndex = 0;
+    let score = 0;
+    let correctCount = 0;
+    let wrongCount = 0;
+    let currentStreak = 0;
+    let isAnswered = false;
+    let soundEnabled = true;
+    let userAnswersHistory = [];
+
+    // Web Audio Context for synthesized sound effects (100% offline, zero external files)
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playTone(freq, type, duration, startTime = 0, gainLevel = 0.22) {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + startTime);
+
+        gain.gain.setValueAtTime(gainLevel, ctx.currentTime + startTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + startTime + duration);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(ctx.currentTime + startTime);
+        osc.stop(ctx.currentTime + startTime + duration);
+      } catch (e) {
+        console.warn('Audio tone error:', e);
+      }
+    }
+
+    function playCorrectSound() {
+      if (!soundEnabled) return;
+      // Joyful 4-note ascending chime (C5 -> E5 -> G5 -> C6)
+      playTone(523.25, 'triangle', 0.14, 0.00, 0.25);
+      playTone(659.25, 'triangle', 0.14, 0.08, 0.25);
+      playTone(783.99, 'triangle', 0.18, 0.16, 0.25);
+      playTone(1046.50, 'sine', 0.32, 0.24, 0.28);
+    }
+
+    function playWrongSound() {
+      if (!soundEnabled) return;
+      // Low dual boing / buzzer
+      playTone(240, 'sawtooth', 0.18, 0.00, 0.16);
+      playTone(190, 'sawtooth', 0.25, 0.10, 0.18);
+    }
+
+    function playVictoryFanfare() {
+      if (!soundEnabled) return;
+      const notes = [523, 659, 784, 1046, 784, 1046, 1318];
+      const times = [0, 0.14, 0.28, 0.42, 0.56, 0.70, 0.90];
+      notes.forEach((freq, i) => {
+        playTone(freq, 'triangle', 0.26, times[i], 0.25);
+      });
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('soundToggleBtn').textContent = soundEnabled ? '🔊' : '🔇';
+    }
+
+    // WEB SPEECH SYNTHESIS (Reads question aloud in pt-BR with A, B, C)
+    function speakCurrentQuestion() {
+      if (!('speechSynthesis' in window)) return;
+      const item = deck[currentIndex];
+      if (!item) return;
+
+      window.speechSynthesis.cancel();
+      const textToSpeak = item.question + ". Alternativa A: " + item.options[0] + ". Alternativa B: " + item.options[1] + ". Alternativa C: " + item.options[2];
+      const utterance = new SpeechSynthesisUtterance(textToSpeak);
+      utterance.lang = 'pt-BR';
+      utterance.rate = 0.95;
+      utterance.pitch = 1.0;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // Fisher-Yates Shuffle
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // Prepare each question by dynamically randomizing its 3 options across A, B, and C
+    function prepareQuestionWithRandomOptions(q) {
+      const correctText = q.options[q.correctIndex];
+      const shuffledOptions = shuffle([...q.options]);
+      const newCorrectIndex = shuffledOptions.indexOf(correctText);
+      return {
+        ...q,
+        options: shuffledOptions,
+        correctIndex: newCorrectIndex
+      };
+    }
+
+    // RESTART / INITIALIZE GAME
+    function restartGame() {
+      // Randomize the sequence of questions AND randomize the position of alternatives A, B, C for each question!
+      deck = shuffle(BANCO_DE_QUESTOES).map(prepareQuestionWithRandomOptions);
+      currentIndex = 0;
+      score = 0;
+      correctCount = 0;
+      wrongCount = 0;
+      currentStreak = 0;
+      isAnswered = false;
+      userAnswersHistory = [];
+
+      document.getElementById('finalReportCard').classList.add('hidden');
+      document.getElementById('gamePlayArea').classList.remove('hidden');
+
+      updateStatsUI();
+      renderCurrentQuestion();
+    }
+
+    function updateStatsUI() {
+      document.getElementById('scoreCounter').textContent = `${score} pts`;
+      document.getElementById('streakCounter').textContent = currentStreak;
+      document.getElementById('correctCounter').textContent = correctCount;
+      document.getElementById('wrongCounter').textContent = wrongCount;
+
+      const total = deck.length;
+      document.getElementById('progressText').textContent = `Questão ${currentIndex + 1} de ${total}`;
+      const percentage = ((currentIndex) / total) * 100;
+      document.getElementById('progressBar').style.width = `${Math.max(percentage, 2)}%`;
+    }
+
+    function renderCurrentQuestion() {
+      isAnswered = false;
+      const item = deck[currentIndex];
+
+      // Reset card animation
+      const card = document.getElementById('questionCard');
+      card.classList.remove('pop-in');
+      void card.offsetWidth; // reflow
+      card.classList.add('pop-in');
+
+      // Category badge
+      document.getElementById('categoryBadge').textContent = item.category || 'Dispositivos de Armazenamento';
+      document.getElementById('categoryBadgeMini').textContent = item.type === 'visual' ? '📸 Visual' : '📝 Conceitual';
+
+      // Question text
+      document.getElementById('currentQuestionText').textContent = item.question;
+
+      // Image area
+      const imgContainer = document.getElementById('imageContainer');
+      if (item.type === 'visual' && item.imageSvg) {
+        imgContainer.innerHTML = item.imageSvg;
+        imgContainer.classList.remove('hidden');
+      } else {
+        imgContainer.innerHTML = '';
+        imgContainer.classList.add('hidden');
+      }
+
+      // Options A, B, C
+      document.getElementById('optText0').textContent = item.options[0];
+      document.getElementById('optText1').textContent = item.options[1];
+      document.getElementById('optText2').textContent = item.options[2];
+
+      // Hide feedback overlay
+      document.getElementById('feedbackPlaqueOverlay').classList.add('hidden');
+      updateStatsUI();
+    }
+
+    // USER PICKS AN OPTION (0 = A, 1 = B, 2 = C)
+    function handleUserChoice(choiceIndex) {
+      if (isAnswered) return;
+      isAnswered = true;
+
+      const currentItem = deck[currentIndex];
+      const isCorrect = choiceIndex === currentItem.correctIndex;
+
+      userAnswersHistory.push({
+        question: currentItem,
+        userChoiceIndex: choiceIndex,
+        isCorrect: isCorrect
+      });
+
+      if (isCorrect) {
+        correctCount++;
+        currentStreak++;
+        const streakBonus = currentStreak > 1 ? currentStreak * 25 : 0;
+        score += 100 + streakBonus;
+        playCorrectSound();
+        triggerConfetti();
+        showPlaque(true, currentItem, choiceIndex);
+      } else {
+        wrongCount++;
+        currentStreak = 0;
+        playWrongSound();
+        showPlaque(false, currentItem, choiceIndex);
+      }
+
+      updateStatsUI();
+    }
+
+    // SHOW PLACA CORRETO OU PLACA ERRADO
+    function showPlaque(isCorrect, item, userChoiceIndex) {
+      const overlay = document.getElementById('feedbackPlaqueOverlay');
+      const plaqueContent = document.getElementById('plaqueContent');
+      const plaqueIcon = document.getElementById('plaqueIcon');
+      const plaqueTitle = document.getElementById('plaqueTitle');
+      const plaqueSubtitle = document.getElementById('plaqueSubtitle');
+      const plaqueExplanation = document.getElementById('plaqueExplanation');
+
+      const letters = ['A', 'B', 'C'];
+      const correctLetter = letters[item.correctIndex];
+      const userLetter = letters[userChoiceIndex];
+
+      // Reset classes
+      plaqueContent.classList.remove('plaque-correct', 'plaque-wrong', 'shake-anim', 'pop-in');
+      void plaqueContent.offsetWidth; // Reflow
+
+      if (isCorrect) {
+        plaqueContent.classList.add('plaque-correct', 'pop-in');
+        plaqueIcon.textContent = '🎉 ⭐ 🎉';
+        plaqueTitle.textContent = 'PLACA CORRETO!';
+        plaqueSubtitle.innerHTML = `Excelente! A resposta correta é a alternativa <b>${correctLetter}</b>:<br><b class="text-amber-200">"${item.options[item.correctIndex]}"</b>`;
+      } else {
+        plaqueContent.classList.add('plaque-wrong', 'shake-anim');
+        plaqueIcon.textContent = '❌ ⚠️ ❌';
+        plaqueTitle.textContent = 'PLACA ERRADO!';
+        plaqueSubtitle.innerHTML = `Você escolheu a alternativa <b>${userLetter}</b> (<i>"${item.options[userChoiceIndex]}"</i>).<br>A resposta correta é a alternativa <b>${correctLetter}</b>: <b class="text-amber-200">"${item.options[item.correctIndex]}"</b>`;
+      }
+
+      // Educational Explanation
+      plaqueExplanation.innerHTML = item.explanation;
+
+      overlay.classList.remove('hidden');
+    }
+
+    // NEXT QUESTION OR GAME OVER
+    function nextQuestion() {
+      currentIndex++;
+      if (currentIndex < deck.length) {
+        renderCurrentQuestion();
+      } else {
+        showFinalReport();
+      }
+    }
+
+    // FINAL REPORT
+    function showFinalReport() {
+      playVictoryFanfare();
+      triggerConfetti(90);
+
+      document.getElementById('gamePlayArea').classList.add('hidden');
+      const report = document.getElementById('finalReportCard');
+      report.classList.remove('hidden');
+
+      document.getElementById('finalTotal').textContent = deck.length;
+      document.getElementById('finalCorrect').textContent = correctCount;
+      document.getElementById('finalWrong').textContent = wrongCount;
+      document.getElementById('finalScore').textContent = `${score} pts`;
+
+      const percentage = Math.round((correctCount / deck.length) * 100);
+      const perfMsg = document.getElementById('performanceMessage');
+
+      if (percentage >= 90) {
+        perfMsg.innerHTML = `🌟 DESEMPENHO LENDÁRIO! (${percentage}% de acertos)<br><span class="text-white text-xs sm:text-sm font-normal">Você é um verdadeiro especialista em hardware e armazenamento de dados! 🏆</span>`;
+      } else if (percentage >= 70) {
+        perfMsg.innerHTML = `👏 MUITO BEM! (${percentage}% de acertos)<br><span class="text-white text-xs sm:text-sm font-normal">Você demonstrou ótimo domínio sobre memórias, discos e tecnologias! 🥈</span>`;
+      } else if (percentage >= 50) {
+        perfMsg.innerHTML = `👍 BOM TRABALHO! (${percentage}% de acertos)<br><span class="text-white text-xs sm:text-sm font-normal">Bom aproveitamento! Dê uma olhada no gabarito completo para revisar os pontos que errou! 🥉</span>`;
+      } else {
+        perfMsg.innerHTML = `💪 VALEU O ESFORÇO! (${percentage}% de acertos)<br><span class="text-white text-xs sm:text-sm font-normal">Abra o guia de estudos e jogue novamente para memorizar os 20 dispositivos!</span>`;
+      }
+    }
+
+    // MODAL HANDLERS
+    function openHelpModal() {
+      document.getElementById('helpModal').classList.remove('hidden');
+    }
+    function closeHelpModal() {
+      document.getElementById('helpModal').classList.add('hidden');
+    }
+
+    function openReviewModal() {
+      const listEl = document.getElementById('reviewContentList');
+      listEl.innerHTML = '';
+
+      const letters = ['A', 'B', 'C'];
+      const itemsToShow = userAnswersHistory.length > 0 ? userAnswersHistory : deck.map(q => ({ question: q, userChoiceIndex: q.correctIndex, isCorrect: true }));
+
+      itemsToShow.forEach((entry, idx) => {
+        const q = entry.question;
+        const box = document.createElement('div');
+        box.className = entry.isCorrect 
+          ? 'p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/40' 
+          : 'p-3 rounded-xl bg-rose-950/40 border border-rose-500/40';
+
+        box.innerHTML = `
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-black text-amber-300">Questão ${idx + 1} (${q.category})</span>
+            <span class="${entry.isCorrect ? 'text-emerald-400 font-black' : 'text-rose-400 font-black'}">
+              ${entry.isCorrect ? '✔ Acertou' : '✖ Errou'}
+            </span>
+          </div>
+          <p class="font-bold text-white mb-1.5">${q.question}</p>
+          <div class="text-xs space-y-0.5 mb-1.5">
+            <div class="text-emerald-300"><b>Alternativa Correta (${letters[q.correctIndex]}):</b> ${q.options[q.correctIndex]}</div>
+            ${!entry.isCorrect ? `<div class="text-rose-300"><b>Sua escolha (${letters[entry.userChoiceIndex]}):</b> ${q.options[entry.userChoiceIndex]}</div>` : ''}
+          </div>
+          <div class="text-[11px] text-sky-200/90 bg-black/30 p-2 rounded border border-white/10">
+            <b>Explicação:</b> ${q.explanation}
+          </div>
+        `;
+        listEl.appendChild(box);
+      });
+
+      document.getElementById('reviewModal').classList.remove('hidden');
+    }
+
+    function closeReviewModal() {
+      document.getElementById('reviewModal').classList.add('hidden');
+    }
+
+    // KEYBOARD SHORTCUTS:
+    // Keys '1' or 'a'/'A' -> Alternative A (0)
+    // Keys '2' or 'b'/'B' -> Alternative B (1)
+    // Keys '3' or 'c'/'C' -> Alternative C (2)
+    // Key 'Space' or 'Enter' -> Advance next question
+    window.addEventListener('keydown', (e) => {
+      const overlay = document.getElementById('feedbackPlaqueOverlay');
+      const isPlaqueOpen = !overlay.classList.contains('hidden');
+      const isHelpOpen = !document.getElementById('helpModal').classList.contains('hidden');
+      const isReviewOpen = !document.getElementById('reviewModal').classList.contains('hidden');
+
+      if (isHelpOpen || isReviewOpen) return;
+
+      if (isPlaqueOpen) {
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          nextQuestion();
+        }
+      } else {
+        const key = e.key.toLowerCase();
+        if (key === '1' || key === 'a') handleUserChoice(0);
+        else if (key === '2' || key === 'b') handleUserChoice(1);
+        else if (key === '3' || key === 'c') handleUserChoice(2);
+      }
+    });
+
+    // VIBRANT CANVAS CONFETTI
+    function triggerConfetti(count = 40) {
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const colors = ['#f59e0b', '#10b981', '#38bdf8', '#8b5cf6', '#ec4899', '#f43f5e', '#3b82f6'];
+
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: canvas.width / 2,
+          y: canvas.height * 0.42,
+          vx: (Math.random() - 0.5) * 14,
+          vy: (Math.random() - 1.25) * 12,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          size: Math.random() * 8 + 4,
+          life: 1
+        });
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let active = false;
+
+        particles.forEach(p => {
+          if (p.life > 0) {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.38; // gravity
+            p.life -= 0.02;
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = Math.max(p.life, 0);
+            ctx.fillRect(p.x, p.y, p.size, p.size);
+            active = true;
+          }
+        });
+
+        if (active) requestAnimationFrame(animate);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      animate();
+    }
+
+    // INITIALIZE ON LOAD
+    window.addEventListener('DOMContentLoaded', () => {
+      restartGame();
+    });
+  </script>
+</body>
+</html>
